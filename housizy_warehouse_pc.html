@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Housizy Warehouse</title>
+<meta charset="UTF-8">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;700;900&family=Inter:wght@400;500;600&display=swap");
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#F0F4F8;--cd:#fff;--tx:#1A1A1A;--mt:#6B7280;--br:#E5E7EB;
+  --teal:#00796B;--td:#004D40;--amber:#E8A020;--red:#B71C1C;
+  --grn:#2E7D32;--blu:#1565C0;--pur:#6A1B9A;--org:#E65100;
+  --sbw:220px;
+}
+body{font-family:Inter,sans-serif;background:var(--bg);color:var(--tx);font-size:14px}
+/* LOGIN */
+.lp{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#003329,#004D40,#00796B)}
+.lb{background:#fff;border-radius:20px;padding:40px 36px;width:420px;box-shadow:0 24px 80px rgba(0,0,0,.35)}
+/* LAYOUT */
+.lay{display:flex;min-height:100vh}
+.sb{width:var(--sbw);background:linear-gradient(180deg,#003329,#00574B);position:fixed;top:0;left:0;height:100vh;display:flex;flex-direction:column;z-index:200}
+.sbl{padding:16px;border-bottom:1px solid rgba(255,255,255,.1)}
+.sbt{font-family:Manrope,sans-serif;font-size:19px;font-weight:900;color:#fff;letter-spacing:-0.5px}
+.sbx{font-size:10px;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:1px;margin-top:2px}
+.sbwh{display:inline-block;background:rgba(255,255,255,.15);color:#fff;font-size:10px;font-weight:800;padding:2px 8px;border-radius:10px;margin-top:5px;letter-spacing:.5px}
+.sbn2{flex:1;overflow-y:auto;padding:6px 0;scrollbar-width:none}
+.sbn2::-webkit-scrollbar{display:none}
+.ns{font-size:9px;font-weight:700;color:rgba(255,255,255,.32);text-transform:uppercase;letter-spacing:1.2px;padding:12px 14px 4px}
+.ni{display:flex;align-items:center;gap:8px;padding:8px 14px;cursor:pointer;color:rgba(255,255,255,.65);font-size:12px;font-weight:600;border:none;background:none;width:100%;text-align:left;border-left:3px solid transparent;transition:all .12s}
+.ni:hover{background:rgba(255,255,255,.08);color:#fff}
+.ni.on{background:rgba(255,255,255,.14);color:#fff;border-left-color:var(--amber)}
+.nb{margin-left:auto;font-size:10px;font-weight:800;padding:1px 6px;border-radius:10px;background:#EF4444;color:#fff}
+.nb.teal{background:var(--amber);color:#1A1A1A}
+.sbft{padding:10px 14px;border-top:1px solid rgba(255,255,255,.1)}
+/* MAIN */
+.mn{margin-left:var(--sbw);flex:1;display:flex;flex-direction:column}
+.tb{height:56px;background:#fff;border-bottom:1px solid var(--br);display:flex;align-items:center;padding:0 22px;gap:12px;position:sticky;top:0;z-index:100}
+.tbt{font-family:Manrope,sans-serif;font-size:17px;font-weight:900;flex:1}
+/* SECTIONS */
+.sec{display:none;padding:20px 22px}
+.sec.on{display:block}
+/* CARDS */
+.card{background:var(--cd);border-radius:12px;border:1px solid var(--br);padding:16px}
+/* KPI */
+.kr{display:grid;gap:12px;margin-bottom:16px}
+.r2{grid-template-columns:repeat(2,1fr)}.r3{grid-template-columns:repeat(3,1fr)}.r4{grid-template-columns:repeat(4,1fr)}
+.kpi{background:var(--cd);border-radius:12px;border:1px solid var(--br);padding:14px 16px;border-top:3px solid #ccc}
+.kpi.T{border-top-color:var(--teal)}.kpi.R{border-top-color:var(--red)}.kpi.G{border-top-color:var(--grn)}
+.kpi.A{border-top-color:var(--amber)}.kpi.B{border-top-color:var(--blu)}.kpi.O{border-top-color:var(--org)}
+.kl{font-size:10px;font-weight:700;color:var(--mt);text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px}
+.kv{font-family:Manrope,sans-serif;font-size:24px;font-weight:900;line-height:1}
+.ks{font-size:11px;color:var(--mt);margin-top:4px}
+/* PILLS */
+.pill{font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;display:inline-block;white-space:nowrap}
+.pN{background:#FFF7ED;color:#C2410C}.pP{background:#EFF6FF;color:#1D4ED8}.pR{background:#F0FDF4;color:#166534}
+.pD{background:#FAF5FF;color:#6B21A8}.pV{background:#ECFDF5;color:#065F46}
+.pI{background:#FEF2F2;color:#991B1B}.pA{background:#FFFBEB;color:#92400E}
+.pB{background:#EFF6FF;color:#1E40AF}.pG{background:#F9FAFB;color:#374151}
+.pT{background:#E0F2F1;color:#00574B}.pO{background:#F3F4F6;color:#6B7280}
+/* TABLES */
+.tw{overflow-x:auto;border-radius:10px;border:1px solid var(--br)}
+table{width:100%;border-collapse:collapse;background:#fff}
+th{background:#F9FAFB;font-size:10px;font-weight:700;color:var(--mt);text-transform:uppercase;letter-spacing:.5px;padding:9px 12px;text-align:left;border-bottom:1px solid var(--br);white-space:nowrap}
+td{padding:10px 12px;font-size:13px;border-bottom:1px solid #F5F7FA;vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#FAFAFA}
+/* BUTTONS */
+.btn{padding:7px 14px;border:none;border-radius:8px;font-family:Manrope,sans-serif;font-size:12px;font-weight:800;cursor:pointer;transition:all .12s;white-space:nowrap;display:inline-flex;align-items:center;gap:5px}
+.btn:hover{filter:brightness(.92)}.btn:active{transform:scale(.97)}
+.bT{background:var(--teal);color:#fff}.bR{background:var(--red);color:#fff}
+.bG{background:var(--grn);color:#fff}.bA{background:var(--amber);color:#1A1A1A}
+.bB{background:var(--blu);color:#fff}.bO{background:var(--org);color:#fff}
+.bX{background:#F3F4F6;color:var(--tx);border:1px solid var(--br)}.bD{background:#FEF2F2;color:#B91C1C;border:1px solid #FCA5A5}
+.bs{padding:4px 10px;font-size:11px;border-radius:6px}.bl{padding:11px 22px;font-size:14px}.bf{width:100%;justify-content:center}
+/* FORMS */
+.fg{margin-bottom:13px}
+.fl{font-size:10px;font-weight:700;color:var(--mt);text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px;display:block}
+.fi{width:100%;background:#F9FAFB;border:1.5px solid var(--br);border-radius:9px;padding:9px 12px;font-size:13px;color:var(--tx);outline:none;font-family:Inter,sans-serif}
+.fi:focus{border-color:var(--teal);background:#fff}
+.fs{padding:5px 9px;font-size:12px}
+.f2{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+.f3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:13px}
+/* MODALS */
+.mo{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:500;display:none;align-items:center;justify-content:center;padding:20px}
+.mo.on{display:flex}
+.mbox{background:#fff;border-radius:18px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 24px 80px rgba(0,0,0,.25)}
+.msm{max-width:460px}.mmd{max-width:580px}.mlg{max-width:760px}
+.mh{padding:18px 20px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--br);position:sticky;top:0;background:#fff}
+.mtitle{font-family:Manrope,sans-serif;font-size:16px;font-weight:900}
+.mx{width:28px;height:28px;border-radius:7px;background:#F3F4F6;border:none;cursor:pointer;font-size:14px}
+.mbd{padding:16px 20px 20px}
+/* MISC */
+.sh{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.sh-t{font-family:Manrope,sans-serif;font-size:15px;font-weight:900}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+.ab{padding:9px 14px;border-radius:9px;margin-bottom:12px;font-size:13px;font-weight:600;display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.abR{background:#FEF2F2;color:#991B1B;border:1px solid #FECACA}
+.abA{background:#FFFBEB;color:#92400E;border:1px solid #FDE68A}
+.abG{background:#F0FDF4;color:#166534;border:1px solid #BBF7D0}
+.abT{background:#E0F2F1;color:#004D40;border:1px solid #80CBC4}
+.abB{background:#EFF6FF;color:#1E40AF;border:1px solid #BFDBFE}
+.ch{height:220px;position:relative}
+.pgb{height:6px;border-radius:3px;background:#F3F4F6;overflow:hidden}
+.pgf{height:100%;border-radius:3px;transition:width .4s}
+.srow{display:flex;align-items:center;gap:9px;padding:10px 0;border-bottom:1px solid #F5F7FA}
+.srow:last-child{border-bottom:none}
+.sic{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.tgl{width:38px;height:20px;border-radius:10px;background:#D1D5DB;border:none;cursor:pointer;flex-shrink:0;transition:background .2s;position:relative}
+.tgl.on{background:var(--teal)}
+.tgl span{position:absolute;width:14px;height:14px;border-radius:50%;background:#fff;top:3px;left:3px;transition:left .2s}
+.tgl.on span{left:21px}
+.ld{width:7px;height:7px;border-radius:50%;background:#10B981;display:inline-block;animation:pulse 1.5s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+/* ORDER CARD — big tap-friendly workflow cards */
+.ocard{background:#fff;border:1.5px solid var(--br);border-radius:14px;padding:16px;margin-bottom:12px;cursor:pointer;transition:box-shadow .15s,border-color .15s}
+.ocard:hover{box-shadow:0 4px 20px rgba(0,0,0,.08);border-color:var(--teal)}
+.ocard.urgent{border-left:4px solid var(--red)}
+.ocard.ready{border-left:4px solid var(--grn)}
+.ocard.dispatched{border-left:4px solid var(--pur)}
+.ocard-id{font-family:Manrope,sans-serif;font-weight:900;font-size:15px;color:var(--teal)}
+.ocard-cust{font-weight:700;font-size:14px;margin:2px 0}
+.ocard-area{font-size:12px;color:var(--mt)}
+.ocard-items{font-size:12px;color:var(--tx);margin:8px 0;padding:8px 10px;background:#F9FAFB;border-radius:8px;line-height:1.6}
+.ocard-footer{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:10px}
+/* SCANNER AREA */
+.scan-box{background:linear-gradient(135deg,#E0F2F1,#F9FAFB);border:2px dashed #80CBC4;border-radius:12px;padding:20px;text-align:center;margin-bottom:14px}
+/* PRINT SLIP */
+.slip{background:#fff;border:1px solid #ccc;border-radius:8px;padding:16px;font-size:12px;max-width:320px;margin:0 auto}
+/* BADGE COUNTER */
+.badge-cnt{background:var(--red);color:#fff;font-size:11px;font-weight:900;padding:2px 7px;border-radius:10px;margin-left:5px}
+/* STATUS STEPS */
+.steps{display:flex;gap:0;margin:14px 0}
+.step{flex:1;text-align:center;position:relative}
+.step::after{content:"";position:absolute;top:14px;right:-50%;width:100%;height:2px;background:#E5E7EB;z-index:0}
+.step:last-child::after{display:none}
+.step-dot{width:28px;height:28px;border-radius:50%;background:#E5E7EB;margin:0 auto 5px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;position:relative;z-index:1}
+.step-dot.done{background:var(--teal);color:#fff}
+.step-dot.active{background:var(--amber);color:#1A1A1A;box-shadow:0 0 0 3px #FDE68A}
+.step-lbl{font-size:10px;font-weight:700;color:var(--mt)}
+.step-lbl.done{color:var(--teal)}.step-lbl.active{color:var(--org);font-weight:800}
+#toast{position:fixed;bottom:20px;right:20px;background:#1A1A1A;color:#fff;padding:11px 16px;border-radius:10px;font-size:13px;font-weight:600;opacity:0;transition:opacity .3s;z-index:9999}
+#toast.on{opacity:1}
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-thumb{background:#E5E7EB;border-radius:2px}
+</style>
+
+<body>
+<div id="lp" class="lp">
+<div class="lb">
+<div style="text-align:center;margin-bottom:24px">
+<div class="logo-wh">Housizy Warehouse Partner Portal</div>
+<div style="font-family:Manrope,sans-serif;font-size:30px;font-weight:900;color:var(--teal);letter-spacing:-1px">WH Dashboard</div>
+<div style="font-size:12px;color:var(--mt);margin-top:4px">Operations Console</div>
+</div>
+<div class="fg"><label class="fl">Your Warehouse</label>
+<select class="fi" id="lwh" aria-label="WH">
+<option value="WH-001">WH-001 &mdash; Nadar Ganj (Raju Enterprises)</option>
+<option value="WH-002">WH-002 &mdash; Alambagh (Sharma Traders)</option>
+</select></div>
+<div class="fg"><label class="fl">Login As</label>
+<select class="fi" id="lstaff" aria-label="Role">
+<option value="owner">Warehouse Owner / Manager</option>
+<option value="supervisor">Supervisor</option>
+<option value="picker">Picker / Packer</option>
+</select></div>
+<div class="fg"><label class="fl">Password</label>
+<input class="fi" id="lpw" type="password" placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;" aria-label="Password" onkeydown="if(event.key==='Enter')doLogin()"></div>
+<button class="btn bT bf bl" onclick="doLogin()" style="margin-top:6px">Enter Warehouse &rarr;</button>
+<button class="btn bX bf" style="margin-top:8px" onclick="demoLogin()">Demo Login</button>
+</div>
+</div>
+
+<div id="app" class="lay" style="display:none">
+<aside class="sb">
+<div class="sbl"><div class="sbt">HOUSIZY</div><div class="sbst" id="sb-wh-name">WH &mdash; &mdash;</div></div>
+<nav class="sbnav" id="snav"></nav>
+<div class="sbft">
+<div style="display:flex;align-items:center;gap:8px">
+<div style="width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;font-size:14px">&#127981;</div>
+<div style="flex:1;min-width:0">
+<div style="font-size:12px;font-weight:700;color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" id="sb-staff-name">&mdash;</div>
+<div style="font-size:10px;color:rgba(255,255,255,.42)" id="sb-staff-role">&mdash;</div>
+</div>
+<button onclick="doLogout()" style="background:rgba(255,255,255,.1);border:none;border-radius:6px;width:26px;height:26px;cursor:pointer;color:rgba(255,255,255,.6);font-size:12px">&#9211;</button>
+</div></div>
+</aside>
+<main class="mn">
+<div class="tb">
+<div class="tbt" id="tbt">Dashboard</div>
+<span class="wh-badge" id="tb-wh-badge">WH</span>
+<div style="display:flex;align-items:center;gap:5px;font-size:12px;color:var(--mt)"><div class="ld"></div><span>Live</span></div>
+<div style="font-size:12px;color:var(--mt)" id="tbc"></div>
+<div style="font-size:11px;color:var(--teal);font-weight:700">&#8635; <span id="ts-tb">Tally: OK</span></div>
+</div>
+<div id="s-dash" class="sec on"></div>
+<div id="s-queue" class="sec"></div>
+<div id="s-pack" class="sec"></div>
+<div id="s-dispatch" class="sec"></div>
+<div id="s-inv" class="sec"></div>
+<div id="s-grn" class="sec"></div>
+<div id="s-drivers" class="sec"></div>
+<div id="s-staff" class="sec"></div>
+<div id="s-attend" class="sec"></div>
+<div id="s-returns" class="sec"></div>
+<div id="s-tally" class="sec"></div>
+<div id="s-settle" class="sec"></div>
+<div id="s-perf" class="sec"></div>
+<div id="s-settings" class="sec"></div>
+</main>
+</div>
+
+<div class="mo" id="mo-order"><div class="mbox mlg"><div class="mh"><div class="mtitle" id="mo-ord-t">Order</div><button class="mx" onclick="cm('mo-order')">&#x2715;</button></div><div class="mbd" id="mo-ord-b"></div></div></div>
+<div class="mo" id="mo-pack"><div class="mbox mlg"><div class="mh"><div class="mtitle" id="mo-pack-t">Packing Checklist</div><button class="mx" onclick="cm('mo-pack')">&#x2715;</button></div><div class="mbd" id="mo-pack-b"></div></div></div>
+<div class="mo" id="mo-dispatch"><div class="mbox mmd"><div class="mh"><div class="mtitle">Dispatch Order</div><button class="mx" onclick="cm('mo-dispatch')">&#x2715;</button></div><div class="mbd" id="mo-disp-b"></div></div></div>
+<div class="mo" id="mo-grn"><div class="mbox mmd"><div class="mh"><div class="mtitle">Receive Stock</div><button class="mx" onclick="cm('mo-grn')">&#x2715;</button></div><div class="mbd" id="mo-grn-b"></div></div></div>
+<div class="mo" id="mo-adj"><div class="mbox msm"><div class="mh"><div class="mtitle">Adjust Stock</div><button class="mx" onclick="cm('mo-adj')">&#x2715;</button></div><div class="mbd" id="mo-adj-b"></div></div></div>
+<div class="mo" id="mo-driver"><div class="mbox mmd"><div class="mh"><div class="mtitle" id="mo-drv-t">Driver</div><button class="mx" onclick="cm('mo-driver')">&#x2715;</button></div><div class="mbd" id="mo-drv-b"></div></div></div>
+<div class="mo" id="mo-checkin"><div class="mbox msm"><div class="mh"><div class="mtitle">Check In Driver</div><button class="mx" onclick="cm('mo-checkin')">&#x2715;</button></div><div class="mbd" id="mo-checkin-b"></div></div></div>
+<div class="mo" id="mo-retlog"><div class="mbox mmd"><div class="mh"><div class="mtitle">Log Return</div><button class="mx" onclick="cm('mo-retlog')">&#x2715;</button></div><div class="mbd" id="mo-retlog-b"></div></div></div>
+<div id="toast"></div>
+<script>
+// ═══ DATA ═══
+var WH_DATA={'WH-001':{nm:'Nadar Ganj',addr:'Near Nadar Ganj Bus Stand, Lucknow',own:'Raju Enterprises',ownPh:'9876543212',comm:8,cap:3000,openTime:'07:00',closeTime:'21:00'},'WH-002':{nm:'Alambagh',addr:'Alambagh, Lucknow',own:'Sharma Traders',ownPh:'9876543219',comm:8,cap:2000,openTime:'07:00',closeTime:'21:00'}};
+var ORDERS=[
+{id:'HSZ-041001',cust:'Rajesh Sharma',ph:'9876543210',area:'Vikas Nagar',time:'10:32 AM',age:28,total:4200,st:'New',pay:'UPI',priority:'high',items:[{nm:'OPC Cement 43 Grade',qty:3,unit:'50kg bag',loc:'R-A2'},{nm:'Copper Wire 2.5mm',qty:1,unit:'coil',loc:'R-C4'}],packed:false,pickedBy:'',dispatchedTo:'',gst:756,notes:''},
+{id:'HSZ-041002',cust:'Mohd. Rizwan',ph:'9876543220',area:'Gomti Nagar',time:'10:58 AM',age:18,total:2850,st:'Packing',pay:'COD',priority:'med',items:[{nm:'Floor Tile 600x600',qty:4,unit:'box',loc:'R-D1'},{nm:'Tile Adhesive 20kg',qty:2,unit:'bag',loc:'R-D3'}],packed:false,pickedBy:'Raju',dispatchedTo:'',gst:513,notes:'Call before delivery'},
+{id:'HSZ-041003',cust:'Priya Gupta',ph:'9876543230',area:'Hazratganj',time:'11:15 AM',age:8,total:1430,st:'Ready',pay:'UPI',priority:'med',items:[{nm:'MCB SP C 16A',qty:5,unit:'piece',loc:'R-E2'}],packed:true,pickedBy:'Sanjay',dispatchedTo:'',gst:257,notes:''},
+{id:'HSZ-041004',cust:'Suresh Kumar',ph:'9876543240',area:'Indira Nagar',time:'11:42 AM',age:4,total:6800,st:'New',pay:'UPI',priority:'high',items:[{nm:'Plywood 18mm BWR',qty:3,unit:'sheet',loc:'R-B5'}],packed:false,pickedBy:'',dispatchedTo:'',gst:1224,notes:'Heavy - 2 people needed'},
+{id:'HSZ-041005',cust:'Ankita Singh',ph:'9876543250',area:'Aliganj',time:'12:10 PM',age:2,total:3120,st:'New',pay:'COD',priority:'med',items:[{nm:'PVC Conduit 25mm',qty:20,unit:'metre',loc:'R-F1'}],packed:false,pickedBy:'',dispatchedTo:'',gst:562,notes:''},
+{id:'HSZ-041006',cust:'Vinod Yadav',ph:'9876543260',area:'Alambagh',time:'12:45 PM',age:1,total:5600,st:'Dispatched',pay:'UPI',priority:'med',items:[{nm:'OPC Cement 43 Grade',qty:8,unit:'50kg bag',loc:'R-A2'}],packed:true,pickedBy:'Deepak',dispatchedTo:'Ramesh Kumar',gst:1008,notes:''},
+];
+var INVENTORY=[
+{id:1,nm:'OPC Cement 43 Grade',cat:'Cement',brand:'UltraTech',unit:'50kg bag',qty:142,min:50,max:300,loc:'Row A, Rack 2',cost:340,hsn:'2523',tally:'OPC Cement 43 Grade',lastRcv:'Apr 5'},
+{id:2,nm:'PPC Cement',cat:'Cement',brand:'ACC',unit:'50kg bag',qty:88,min:40,max:200,loc:'Row A, Rack 3',cost:320,hsn:'2523',tally:'PPC Cement',lastRcv:'Apr 3'},
+{id:3,nm:'Copper Wire 2.5mm',cat:'Wire',brand:'Finolex',unit:'90m coil',qty:34,min:20,max:80,loc:'Row C, Rack 4',cost:1500,hsn:'8544',tally:'Copper Wire 2.5mm',lastRcv:'Apr 6'},
+{id:4,nm:'MCB SP C 16A',cat:'Electrical',brand:'Legrand',unit:'piece',qty:280,min:100,max:500,loc:'Row E, Rack 2',cost:210,hsn:'8536',tally:'MCB SP C 16A',lastRcv:'Apr 4'},
+{id:5,nm:'Floor Tile 600x600',cat:'Tiles',brand:'Kajaria',unit:'box',qty:60,min:80,max:200,loc:'Row D, Rack 1',cost:300,hsn:'6907',tally:'Floor Tile 600x600',lastRcv:'Apr 2'},
+{id:6,nm:'Plywood 18mm BWR',cat:'Plywood',brand:'Century',unit:'sheet',qty:14,min:10,max:50,loc:'Row B, Rack 5',cost:2200,hsn:'4412',tally:'Plywood 18mm BWR',lastRcv:'Mar 28'},
+{id:7,nm:'PVC Conduit 25mm',cat:'Conduit',brand:'Precision',unit:'metre',qty:440,min:100,max:600,loc:'Row F, Rack 1',cost:48,hsn:'3917',tally:'PVC Conduit 25mm',lastRcv:'Apr 1'},
+{id:8,nm:'Tile Adhesive 20kg',cat:'Tiles',brand:'Weber',unit:'bag',qty:36,min:20,max:80,loc:'Row D, Rack 3',cost:280,hsn:'6907',tally:'Tile Adhesive 20kg',lastRcv:'Apr 4'},
+{id:9,nm:'Copper Wire 4mm',cat:'Wire',brand:'Finolex',unit:'90m coil',qty:18,min:15,max:60,loc:'Row C, Rack 5',cost:2400,hsn:'8544',tally:'Copper Wire 4mm',lastRcv:'Apr 2'},
+];
+var DRIVERS=[
+{id:1,nm:'Ramesh Kumar',ph:'9876543211',veh:'Tata Ace',vnum:'UP32 AB 4421',cap:'1.5 ton',st:'Available',trips:6,earn:1680,checkin:'07:15 AM',lic:'UP3220230012',activeOrder:''},
+{id:2,nm:'Vikram Singh',ph:'9876543215',veh:'Mahindra Pickup',vnum:'UP32 CD 8812',cap:'1 ton',st:'On Trip',trips:4,earn:1120,checkin:'07:45 AM',lic:'UP3220240023',activeOrder:'HSZ-041006'},
+{id:3,nm:'Anil Yadav',ph:'9876543217',veh:'Tata Ace',vnum:'UP32 EF 1234',cap:'1.5 ton',st:'Available',trips:8,earn:2240,checkin:'06:55 AM',lic:'UP3220220034',activeOrder:''},
+];
+var STAFF=[
+{id:1,nm:'Raju Patel',role:'Supervisor',ph:'9876543222',shift:'7AM-7PM',checkin:'07:05',checkout:'',st:'In',tasks:12,perf:94},
+{id:2,nm:'Deepak Kumar',role:'Picker',ph:'9876543223',shift:'7AM-7PM',checkin:'07:12',checkout:'',st:'In',tasks:8,perf:88},
+{id:3,nm:'Sanjay Gupta',role:'Packer',ph:'9876543224',shift:'7AM-7PM',checkin:'07:08',checkout:'',st:'In',tasks:10,perf:91},
+{id:4,nm:'Preetam Das',role:'Picker',ph:'9876543225',shift:'7AM-7PM',checkin:'',checkout:'',st:'Absent',tasks:0,perf:72},
+];
+var ATTEND_LOG=[{dt:'Apr 7',present:3,absent:1},{dt:'Apr 6',present:4,absent:0},{dt:'Apr 5',present:4,absent:0},{dt:'Apr 4',present:3,absent:0},{dt:'Apr 3',present:4,absent:0}];
+var GRN_LOG=[{id:'GRN-041',sup:'UltraTech Cement Ltd',item:'OPC Cement 43 Grade',qty:200,rcvd:200,dt:'Apr 5',by:'Raju Patel',ok:true},{id:'GRN-040',sup:'Finolex Cables',item:'Copper Wire 2.5mm',qty:20,rcvd:18,dt:'Apr 1',by:'Raju Patel',ok:false,note:'2 coils damaged'}];
+var RETURNS_LOG=[{id:'RET-041',order:'HSZ-040912',item:'OPC Cement 43G',qty:2,reason:'Damaged in transit',dt:'Apr 5',st:'Received'}];
+var CH={};var CW={};var ALOG=[];var TALLY_CFG={ip:'localhost',port:'9000',freq:'Every 5 min',autoVoucher:true,lastSync:null};
+// ═══ NAV + UTILS ═══
+var NAV=[{id:'dash',l:'Dashboard',ic:'📊',grp:'Operations'},{id:'queue',l:'Order Queue',ic:'📋',grp:'Operations',badge:'new'},{id:'pack',l:'Packing Station',ic:'📦',grp:'Operations',badge:'pack'},{id:'dispatch',l:'Dispatch',ic:'🚛',grp:'Operations',badge:'ready'},{id:'inv',l:'Inventory',ic:'🗄',grp:'Stock'},{id:'grn',l:'Receive Stock',ic:'📥',grp:'Stock'},{id:'drivers',l:'Drivers',ic:'🚗',grp:'Delivery'},{id:'staff',l:'Staff',ic:'👥',grp:'People'},{id:'attend',l:'Attendance',ic:'📅',grp:'People'},{id:'returns',l:'Returns',ic:'↩',grp:'People'},{id:'tally',l:'Tally Sync',ic:'🔄',grp:'System'},{id:'settle',l:'My Settlement',ic:'💰',grp:'System'},{id:'perf',l:'Performance',ic:'📈',grp:'System'},{id:'settings',l:'Settings',ic:'⚙',grp:'System'}];
+var TT={dash:'Dashboard',queue:'Order Queue',pack:'Packing Station',dispatch:'Dispatch',inv:'Inventory',grn:'Receive Stock',drivers:'Drivers',staff:'Staff',attend:'Attendance',returns:'Returns',tally:'Tally Sync',settle:'My Settlement',perf:'Performance',settings:'Settings'};
+function f(n){return '\u20b9'+(n||0).toLocaleString('en-IN');}
+function toast(m,c){var t=document.getElementById('toast');t.textContent=m;t.style.background=c||'#004D40';t.classList.add('on');clearTimeout(t._t);t._t=setTimeout(function(){t.classList.remove('on');},3200);}
+function om(id){document.getElementById(id).classList.add('on');}
+function cm(id){document.getElementById(id).classList.remove('on');}
+document.addEventListener('click',function(e){if(e.target.classList.contains('mo'))e.target.classList.remove('on');});
+function sp(s){var m={New:'pN',Packing:'pP',Ready:'pT',Dispatched:'pD',Delivered:'pV',Available:'pT','On Trip':'pA',Absent:'pI',In:'pT',Out:'pG',Offline:'pO',Restocked:'pT',Disposed:'pG',Received:'pA'};return '<span class="pill '+(m[s]||'pG')+'">'+s+'</span>';}
+function mch(id,type,data,opts){if(CH[id])CH[id].destroy();var c=document.getElementById(id);if(!c)return;CH[id]=new Chart(c,{type:type,data:data,options:Object.assign({responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}}},opts||{})});return CH[id];}
+function alog(action,cat){ALOG.unshift({time:new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'}),by:CW.staffNm||'Staff',action:action,cat:cat||'General'});}
+function callPhone(ph){window.open('tel:+91'+ph);toast('Dialling +91'+ph+'...','#1565C0');}
+function ageTimer(age){if(age>30)return '<span class="timer timer-late">'+age+'m</span>';if(age>15)return '<span class="timer timer-warn">'+age+'m</span>';return '<span class="timer timer-ok">'+age+'m</span>';}
+function cN(){return ORDERS.filter(function(o){return o.st==='New';}).length;}
+function cP(){return ORDERS.filter(function(o){return o.st==='Packing';}).length;}
+function cR(){return ORDERS.filter(function(o){return o.st==='Ready';}).length;}
+function updBadges(){var b=document.getElementById('bdg-new');if(b)b.textContent=cN();var bp=document.getElementById('bdg-pack');if(bp)bp.textContent=cP();var br=document.getElementById('bdg-ready');if(br)br.textContent=cR();}
+// ═══ AUTH ═══
+function doLogin(){var w=WH_DATA[document.getElementById('lwh').value];CW={whId:document.getElementById('lwh').value,whNm:w.nm,own:w.own,comm:w.comm,role:document.getElementById('lstaff').value,staffNm:w.own};launch();}
+function demoLogin(){var w=WH_DATA['WH-001'];CW={whId:'WH-001',whNm:w.nm,own:w.own,comm:w.comm,role:'owner',staffNm:w.own};launch();}
+function doLogout(){document.getElementById('lp').style.display='flex';document.getElementById('app').style.display='none';}
+function launch(){
+  document.getElementById('lp').style.display='none';document.getElementById('app').style.display='flex';
+  document.getElementById('sb-wh-name').textContent=CW.whId+' \u2014 '+CW.whNm;
+  document.getElementById('sb-staff-name').textContent=CW.staffNm;
+  document.getElementById('sb-staff-role').textContent={owner:'Owner/Manager',supervisor:'Supervisor',picker:'Picker'}[CW.role]||CW.role;
+  document.getElementById('tb-wh-badge').textContent=CW.whId+' \u2014 '+CW.whNm;
+  buildNav();show('dash');
+  setInterval(function(){document.getElementById('tbc').textContent=new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit',second:'2-digit'});},1000);
+  setInterval(function(){ORDERS.forEach(function(o){if(o.st==='New'||o.st==='Packing')o.age++;});updBadges();},60000);
+  alog('Logged in','Auth');
+}
+function buildNav(){
+  var h='',lg='';
+  NAV.forEach(function(n){
+    if(n.grp!==lg){h+='<div class="ns">'+n.grp+'</div>';lg=n.grp;}
+    var bd='';
+    if(n.badge==='new')bd='<span class="nb" id="bdg-new">'+cN()+'</span>';
+    else if(n.badge==='pack')bd='<span class="nb" style="background:#3B82F6" id="bdg-pack">'+cP()+'</span>';
+    else if(n.badge==='ready')bd='<span class="nb nb-grn" id="bdg-ready">'+cR()+'</span>';
+    h+='<button class="ni" id="ni-'+n.id+'" onclick="show(\''+n.id+'\')"><span class="ni-ic">'+n.ic+'</span>'+n.l+bd+'</button>';
+  });
+  document.getElementById('snav').innerHTML=h;
+}
+var RF={};
+function show(id){
+  document.querySelectorAll('.sec').forEach(function(s){s.classList.remove('on');});
+  document.querySelectorAll('.ni').forEach(function(n){n.classList.remove('on');});
+  var el=document.getElementById('s-'+id);if(el)el.classList.add('on');
+  var ni=document.getElementById('ni-'+id);if(ni)ni.classList.add('on');
+  document.getElementById('tbt').textContent=TT[id]||id;
+  if(RF[id])RF[id]();
+}
+// ═══ DASHBOARD ═══
+RF['dash']=function(){
+  var el=document.getElementById('s-dash');
+  var low=INVENTORY.filter(function(i){return i.qty<i.min;});
+  var todayRev=ORDERS.filter(function(o){return o.st==='Dispatched'||o.st==='Delivered';}).reduce(function(a,o){return a+o.total;},0);
+  el.innerHTML=
+    '<div class="kr r5">'
+    +'<div class="kpi R"><div class="kl">New Orders</div><div class="kv" style="color:var(--red)">'+cN()+'</div><div class="ks">need packing</div></div>'
+    +'<div class="kpi B"><div class="kl">Being Packed</div><div class="kv" style="color:var(--blu)">'+cP()+'</div></div>'
+    +'<div class="kpi T"><div class="kl">Ready to Ship</div><div class="kv" style="color:var(--teal)">'+cR()+'</div></div>'
+    +'<div class="kpi A"><div class="kl">Dispatched</div><div class="kv" style="color:var(--amb)">'+ORDERS.filter(function(o){return o.st==='Dispatched';}).length+'</div></div>'
+    +'<div class="kpi G"><div class="kl">Delivered</div><div class="kv" style="color:var(--grn)">'+ORDERS.filter(function(o){return o.st==='Delivered';}).length+'</div></div>'
+    +'</div>'
+    +'<div class="kr r4">'
+    +'<div class="kpi T"><div class="kl">Revenue Processed</div><div class="kv" style="color:var(--teal)">'+f(todayRev)+'</div></div>'
+    +'<div class="kpi G"><div class="kl">Drivers Available</div><div class="kv" style="color:var(--grn)">'+DRIVERS.filter(function(d){return d.st==='Available';}).length+'/'+DRIVERS.length+'</div></div>'
+    +'<div class="kpi A"><div class="kl">Staff Present</div><div class="kv" style="color:var(--amb)">'+STAFF.filter(function(s){return s.st==='In';}).length+'/'+STAFF.length+'</div></div>'
+    +'<div class="kpi '+(low.length?'R':'G')+'"><div class="kl">Low Stock Alerts</div><div class="kv" style="color:'+(low.length?'var(--red)':'var(--grn)')+'">'+low.length+'</div></div>'
+    +'</div>'
+    +low.map(function(i){return '<div class="ab abR">\u26a0 Low stock: <strong>'+i.nm+'</strong> \u2014 '+i.qty+' left (min '+i.min+')<button onclick="reorder('+i.id+')" class="btn bD bs" style="margin-left:auto">Receive</button></div>';}).join('')
+    +ORDERS.filter(function(o){return (o.st==='New')&&o.age>20;}).map(function(o){return '<div class="ab abA">\u23f1 Order <strong>'+o.id+'</strong> waiting '+o.age+' min \u2014 pack now!</div>';}).join('')
+    +'<div class="g2">'
+    +'<div class="card"><div class="sh"><div class="sh-t">Order Pipeline</div><button onclick="show(\'queue\')" class="btn bX bs">Queue \u2192</button></div>'
+    +ORDERS.map(function(o){
+      var sc={New:'oc new',Packing:'oc pack',Ready:'oc ready',Dispatched:'oc',Delivered:'oc'}[o.st]||'oc';
+      return '<div class="'+sc+'" onclick="oOrd(\''+o.id+'\')" style="margin-bottom:8px">'
+        +'<div class="oc-hdr"><span class="oc-id">'+o.id+'</span>'+(o.priority==='high'?'<span class="pri-high">HIGH</span>':'')+sp(o.st)+ageTimer(o.age)+'<span class="oc-time">'+o.time+'</span></div>'
+        +'<div class="oc-items">'+o.items.map(function(i){return i.nm+'\xd7'+i.qty;}).join(' \xb7 ')+'</div>'
+        +'<div class="oc-ft"><span style="font-size:12px;color:var(--mt)">'+o.cust+' \xb7 '+o.area+'</span><span style="font-family:Manrope,sans-serif;font-weight:900;color:var(--teal);margin-left:auto">'+f(o.total)+'</span></div></div>';
+    }).join('')+'</div>'
+    +'<div style="display:flex;flex-direction:column;gap:14px">'
+    +'<div class="card"><div class="sh"><div class="sh-t">Staff on Duty</div><button onclick="show(\'staff\')" class="btn bX bs">All \u2192</button></div>'
+    +STAFF.map(function(s){return '<div class="srow"><div class="sic" style="background:var(--teal);color:#fff;font-size:12px;font-weight:900">'+s.nm.charAt(0)+'</div><div style="flex:1"><div style="font-weight:700">'+s.nm+'</div><div style="font-size:11px;color:var(--mt)">'+s.role+'</div></div>'+sp(s.st)+'</div>';}).join('')+'</div>'
+    +'<div class="card"><div class="sh"><div class="sh-t">Drivers</div><button onclick="show(\'drivers\')" class="btn bX bs">All \u2192</button></div>'
+    +DRIVERS.map(function(d){return '<div class="srow"><div class="davatar">'+d.nm.charAt(0)+'</div><div style="flex:1"><div style="font-weight:700">'+d.nm+'</div><div style="font-size:11px;color:var(--mt)">'+d.veh+' \xb7 '+d.trips+' trips</div></div>'+sp(d.st)+'</div>';}).join('')+'</div>'
+    +'<div class="ab abT" style="flex-direction:column;align-items:flex-start">\u21bb Tally: <strong>Connected</strong> \xb7 Last sync 5 min ago<button onclick="doSync()" class="btn bT bs" style="margin-top:8px">Sync Now</button></div>'
+    +'</div></div>';
+};
+// ═══ ORDER QUEUE ═══
+RF['queue']=function(){
+  var el=document.getElementById('s-queue');
+  var sts=['All','New','Packing','Ready','Dispatched'];
+  el.innerHTML='<div class="sbar" id="q-bar">'+sts.map(function(s,i){var cnt=s==='All'?ORDERS.length:ORDERS.filter(function(o){return o.st===s;}).length;return '<div class="sbar-seg '+(i===0?'on':'')+'" onclick="fQ(\''+s+'\',this)">'+s+' ('+cnt+')</div>';}).join('')+'</div>'
+    +'<div style="display:flex;gap:8px;margin-bottom:14px;align-items:center">'
+    +'<input class="fi" style="margin:0;max-width:220px;padding:7px 12px;font-size:12px" placeholder="Search order/customer..." oninput="sQ(this.value)" aria-label="Search">'
+    +'<button onclick="show(\'pack\')" class="btn bT" style="margin-left:auto">\ud83d\udce6 Packing Station \u2192</button>'
+    +'</div><div id="q-list">'+qCards(ORDERS)+'</div>';
+};
+function qCards(list){
+  if(!list.length)return '<div style="text-align:center;padding:40px;color:var(--mt)">No orders</div>';
+  return list.map(function(o){
+    var sc={New:'oc new',Packing:'oc pack',Ready:'oc ready',Dispatched:'oc',Delivered:'oc'}[o.st]||'oc';
+    var ab='';
+    if(o.st==='New')ab='<button onclick="event.stopPropagation();sPack(\''+o.id+'\')" class="btn bT bs">\ud83d\udce6 Start Pack</button>';
+    else if(o.st==='Packing')ab='<button onclick="event.stopPropagation();openPack(\''+o.id+'\')" class="btn bB bs">\u2705 Checklist</button>';
+    else if(o.st==='Ready')ab='<button onclick="event.stopPropagation();openDisp(\''+o.id+'\')" class="btn bG bs">\ud83d\ude9b Dispatch</button>';
+    return '<div class="'+sc+'" onclick="oOrd(\''+o.id+'\')">'
+      +'<div class="oc-hdr"><span class="oc-id">'+o.id+'</span>'+(o.priority==='high'?'<span class="pri-high">HIGH</span>':'<span class="pri-med">MED</span>')+sp(o.st)+ageTimer(o.age)+'<span class="oc-time">'+o.time+'</span></div>'
+      +'<div class="oc-items">'+o.items.map(function(i){return '<span style="background:#F0F4F3;border-radius:6px;padding:2px 8px;margin-right:5px;font-size:12px">'+i.nm+' \xd7'+i.qty+' <strong style="color:var(--teal)">('+i.loc+')</strong></span>';}).join('')+'</div>'
+      +'<div class="oc-ft"><div><div style="font-weight:700">'+o.cust+'</div><div style="font-size:11px;color:var(--mt)">\ud83d\udccd '+o.area+' \xb7 \ud83d\udcde '+o.ph+'</div></div>'
+      +'<span class="pill '+(o.pay==='COD'?'pA':'pT')+'">'+o.pay+'</span>'
+      +'<span style="font-family:Manrope,sans-serif;font-weight:900;color:var(--teal);font-size:15px">'+f(o.total)+'</span>'
+      +(o.notes?'<span style="font-size:11px;color:var(--red)">\u26a0 '+o.notes+'</span>':'')
+      +'<div style="margin-left:auto">'+ab+'</div></div></div>';
+  }).join('');
+}
+function fQ(s,btn){document.querySelectorAll('.sbar-seg').forEach(function(b){b.classList.remove('on');});btn.classList.add('on');document.getElementById('q-list').innerHTML=qCards(s==='All'?ORDERS:ORDERS.filter(function(o){return o.st===s;}));}
+function sQ(q){var lq=q.toLowerCase();document.getElementById('q-list').innerHTML=qCards(ORDERS.filter(function(o){return !q||o.id.toLowerCase().includes(lq)||(o.cust||'').toLowerCase().includes(lq);}));}
+
+// ═══ PACKING ═══
+RF['pack']=function(){
+  var el=document.getElementById('s-pack');
+  var packO=ORDERS.filter(function(o){return o.st==='New'||o.st==='Packing';});
+  var readyO=ORDERS.filter(function(o){return o.st==='Ready';});
+  el.innerHTML='<div class="kr r3" style="margin-bottom:16px">'
+    +'<div class="kpi R"><div class="kl">Needs Packing</div><div class="kv" style="color:var(--red)">'+packO.length+'</div></div>'
+    +'<div class="kpi T"><div class="kl">Packed & Ready</div><div class="kv" style="color:var(--teal)">'+readyO.length+'</div></div>'
+    +'<div class="kpi G"><div class="kl">Staff Present</div><div class="kv" style="color:var(--grn)">'+STAFF.filter(function(s){return s.st==='In';}).length+'</div></div>'
+    +'</div>'
+    +'<div class="g2">'
+    +'<div><div class="sh"><div class="sh-t">\ud83d\udccb To Pack</div></div>'
+    +packO.map(function(o){return '<div class="oc '+(o.st==='New'?'new':'pack')+'">'
+      +'<div class="oc-hdr"><span class="oc-id">'+o.id+'</span>'+(o.priority==='high'?'<span class="pri-high">HIGH</span>':'')+ageTimer(o.age)+'</div>'
+      +'<div class="oc-items">'+o.items.map(function(i){return i.nm+' \xd7'+i.qty+' @ <strong>'+i.loc+'</strong>';}).join('<br>')+'</div>'
+      +'<div class="oc-ft"><span>'+o.cust+' \xb7 '+o.area+'</span><span style="font-family:Manrope,sans-serif;font-weight:900;color:var(--teal)">'+f(o.total)+'</span></div>'
+      +(o.notes?'<div style="font-size:11px;color:var(--red);margin-top:5px">\u26a0 '+o.notes+'</div>':'')
+      +'<div style="margin-top:9px">'+(o.st==='New'?'<button onclick="sPack(\''+o.id+'\')" class="btn bT bf">\ud83d\udce6 Start Packing</button>':'<button onclick="openPack(\''+o.id+'\')" class="btn bB bf">\u2705 Open Checklist</button>')+'</div></div>';}).join('')
+    +(packO.length===0?'<div class="ab abG">\u2713 All orders packed!</div>':'')+'</div>'
+    +'<div><div class="sh"><div class="sh-t">\u2705 Packed & Ready</div></div>'
+    +readyO.map(function(o){return '<div class="oc ready">'
+      +'<div class="oc-hdr"><span class="oc-id">'+o.id+'</span>'+sp(o.st)+'<span class="oc-time">by '+o.pickedBy+'</span></div>'
+      +'<div class="oc-items">'+o.items.map(function(i){return i.nm+' \xd7'+i.qty;}).join(', ')+'</div>'
+      +'<div class="oc-ft"><span>'+o.cust+' \xb7 '+o.area+'</span><span style="font-family:Manrope,sans-serif;font-weight:900;color:var(--teal)">'+f(o.total)+'</span></div>'
+      +'<button onclick="openDisp(\''+o.id+'\')" class="btn bG bf" style="margin-top:9px">\ud83d\ude9b Dispatch</button></div>';}).join('')
+    +(readyO.length===0?'<div style="text-align:center;padding:30px;color:var(--mt)">No packed orders yet</div>':'')
+    +'</div></div>';
+};
+function sPack(id){var o=ORDERS.find(function(x){return x.id===id;});if(!o)return;o.st='Packing';o.pickedBy=CW.staffNm||'Staff';updBadges();if(document.getElementById('s-pack').classList.contains('on'))RF['pack']();if(document.getElementById('s-queue').classList.contains('on'))RF['queue']();toast(id+' packing started','#1565C0');alog('Started packing: '+id,'Orders');}
+function openPack(id){
+  var o=ORDERS.find(function(x){return x.id===id;});if(!o)return;
+  document.getElementById('mo-pack-t').textContent='\ud83d\udce6 Pack: '+id;
+  document.getElementById('mo-pack-b').innerHTML=
+    '<div class="ab abT" style="margin-bottom:12px">'+o.cust+' \xb7 '+o.area+(o.notes?'<br>\u26a0 <strong>'+o.notes+'</strong>':'')+'</div>'
+    +'<div style="font-weight:700;margin-bottom:10px">Tick each item as you pick and pack:</div>'
+    +o.items.map(function(it,i){return '<div class="chk-item" id="chk-'+i+'" onclick="tChk('+i+')">'
+      +'<input type="checkbox" id="chkb-'+i+'" onclick="event.stopPropagation();tChk('+i+')">'
+      +'<div style="flex:1"><div style="font-weight:700;font-size:14px">'+it.nm+'</div>'
+      +'<div style="font-size:12px;color:var(--mt)">Qty: <strong>'+it.qty+' '+it.unit+'</strong> \xb7 Location: <strong style="color:var(--teal)">'+it.loc+'</strong></div></div>'
+      +'<span style="font-size:20px" id="chk-ic-'+i+'">&#9744;</span></div>';}).join('')
+    +'<div style="display:flex;gap:8px;margin-top:14px">'
+    +'<button onclick="cm(\'mo-pack\')" class="btn bX" style="flex:1">Cancel</button>'
+    +'<button onclick="mrkPacked(\''+id+'\')" class="btn bT" style="flex:2">\u2705 Mark Packed & Ready</button></div>';
+  om('mo-pack');
+}
+function tChk(i){var box=document.getElementById('chkb-'+i);var row=document.getElementById('chk-'+i);var ic=document.getElementById('chk-ic-'+i);box.checked=!box.checked;row.classList.toggle('done',box.checked);ic.innerHTML=box.checked?'\u2705':'&#9744;';}
+function mrkPacked(id){var o=ORDERS.find(function(x){return x.id===id;});if(!o)return;o.st='Ready';o.packed=true;cm('mo-pack');updBadges();if(document.getElementById('s-pack').classList.contains('on'))RF['pack']();if(document.getElementById('s-queue').classList.contains('on'))RF['queue']();toast(id+' packed & ready \u2713','#2E7D32');alog('Packed: '+id,'Orders');}
+// ═══ DISPATCH ═══
+RF['dispatch']=function(){
+  var el=document.getElementById('s-dispatch');
+  var rO=ORDERS.filter(function(o){return o.st==='Ready';});
+  var dO=ORDERS.filter(function(o){return o.st==='Dispatched';});
+  el.innerHTML='<div class="kr r3" style="margin-bottom:16px">'
+    +'<div class="kpi T"><div class="kl">Ready to Dispatch</div><div class="kv" style="color:var(--teal)">'+rO.length+'</div></div>'
+    +'<div class="kpi A"><div class="kl">On Road</div><div class="kv" style="color:var(--amb)">'+dO.length+'</div></div>'
+    +'<div class="kpi G"><div class="kl">Drivers Available</div><div class="kv" style="color:var(--grn)">'+DRIVERS.filter(function(d){return d.st==='Available';}).length+'</div></div>'
+    +'</div>'
+    +'<div class="card" style="margin-bottom:16px"><div class="sh"><div class="sh-t">Driver Status</div></div>'
+    +'<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px">'
+    +DRIVERS.map(function(d){return '<div class="dcard '+(d.st==='Available'?'active':'away')+'">'
+      +'<div class="davatar" style="background:'+(d.st==='Available'?'var(--teal)':'var(--amb)')+'">'+d.nm.charAt(0)+'</div>'
+      +'<div style="flex:1;min-width:0"><div style="font-weight:800">'+d.nm+'</div><div style="font-size:11px;color:var(--mt)">'+d.veh+' \xb7 '+d.cap+'</div></div>'+sp(d.st)+'</div>';}).join('')
+    +'</div></div>'
+    +(rO.length?'<div class="sh"><div class="sh-t">\ud83d\udce6 Ready Orders</div></div>'
+    +rO.map(function(o){return '<div class="oc ready" style="margin-bottom:10px">'
+      +'<div class="oc-hdr"><span class="oc-id">'+o.id+'</span>'+sp(o.st)+'<span class="oc-time">'+o.time+'</span></div>'
+      +'<div class="oc-items">'+o.items.map(function(i){return i.nm+' \xd7'+i.qty;}).join(' \xb7 ')+'</div>'
+      +'<div class="oc-ft"><div><div style="font-weight:700">'+o.cust+'</div><div style="font-size:11px;color:var(--mt)">\ud83d\udccd '+o.area+' \xb7 \ud83d\udcde '+o.ph+'</div></div>'
+      +'<span class="pill '+(o.pay==='COD'?'pA':'pT')+'">'+o.pay+'</span>'
+      +'<span style="font-family:Manrope,sans-serif;font-weight:900;color:var(--teal)">'+f(o.total)+'</span>'
+      +(o.notes?'<span style="font-size:11px;color:var(--red)">\u26a0 '+o.notes+'</span>':'')
+      +'<button onclick="openDisp(\''+o.id+'\')" class="btn bG bs" style="margin-left:auto">\ud83d\ude9b Assign Driver</button>'
+      +'</div></div>';}).join(''):'<div class="ab abG">\u2713 All ready orders dispatched!</div>')
+    +'<div class="sh" style="margin-top:16px"><div class="sh-t">\ud83d\ude9b On Road Now</div></div>'
+    +(dO.length?'<div class="tw"><table><thead><tr><th>Order</th><th>Customer</th><th>Area</th><th>Driver</th><th>Amount</th><th>Pay</th><th>Actions</th></tr></thead><tbody>'
+    +dO.map(function(o){return '<tr><td style="font-weight:800;color:var(--teal)">'+o.id+'</td><td>'+o.cust+'</td><td>'+o.area+'</td><td style="font-weight:700">'+o.dispatchedTo+'</td><td>'+f(o.total)+'</td><td><span class="pill '+(o.pay==='COD'?'pA':'pT')+'">'+o.pay+'</span></td><td><div style="display:flex;gap:4px"><button onclick="mrkDelivered(\''+o.id+'\')" class="btn bG bs">\u2713 Delivered</button><button onclick="callPhone(\''+o.ph+'\')" class="btn bX bs">\ud83d\udcde</button></div></td></tr>';}).join('')+'</tbody></table></div>'
+    :'<div style="text-align:center;padding:20px;color:var(--mt)">No orders on road yet</div>');
+};
+function openDisp(id){
+  var o=ORDERS.find(function(x){return x.id===id;});if(!o)return;
+  var av=DRIVERS.filter(function(d){return d.st==='Available';});
+  document.getElementById('mo-disp-b').innerHTML=
+    '<div class="ab abT" style="margin-bottom:12px"><strong>'+o.id+'</strong> \xb7 '+o.cust+' \xb7 \ud83d\udccd '+o.area+'<br>'+o.items.map(function(i){return i.nm+' \xd7'+i.qty;}).join(', ')+'<br>Total: <strong>'+f(o.total)+'</strong> \xb7 <strong>'+o.pay+'</strong></div>'
+    +(o.notes?'<div class="ab abR" style="margin-bottom:10px">\u26a0 '+o.notes+'</div>':'')
+    +'<div class="fg"><label class="fl">Assign Driver</label><select class="fi" id="disp-drv" aria-label="Driver">'
+    +(av.length?av.map(function(d){return '<option value="'+d.nm+'">'+d.nm+' ('+d.veh+' \xb7 '+d.cap+')</option>';}).join(''):'<option>No drivers available</option>')
+    +'</select></div>'
+    +(o.pay==='COD'?'<div class="ab abA">\ud83d\udcb5 COD \u2014 driver collects '+f(o.total)+' on delivery</div>':'<div class="ab abG">\u2705 UPI \u2014 already paid online</div>')
+    +'<div style="display:flex;gap:8px;justify-content:flex-end;margin-top:12px">'
+    +'<button onclick="cm(\'mo-dispatch\')" class="btn bX">Cancel</button>'
+    +(av.length?'<button onclick="doDisp(\''+id+'\')" class="btn bG bl">\ud83d\ude9b Confirm Dispatch</button>':'<button class="btn bD bl" disabled>No drivers</button>')
+    +'</div>';
+  om('mo-dispatch');
+}
+function doDisp(id){var o=ORDERS.find(function(x){return x.id===id;});if(!o)return;var dn=document.getElementById('disp-drv').value;o.st='Dispatched';o.dispatchedTo=dn;var d=DRIVERS.find(function(x){return x.nm===dn;});if(d){d.st='On Trip';d.activeOrder=id;}cm('mo-dispatch');updBadges();if(document.getElementById('s-dispatch').classList.contains('on'))RF['dispatch']();toast(id+' dispatched to '+dn,'#2E7D32');alog('Dispatched '+id+' \u2192 '+dn,'Orders');}
+function mrkDelivered(id){var o=ORDERS.find(function(x){return x.id===id;});if(!o)return;o.st='Delivered';var d=DRIVERS.find(function(x){return x.nm===o.dispatchedTo;});if(d){d.st='Available';d.trips++;d.earn+=280;d.activeOrder='';}updBadges();if(document.getElementById('s-dispatch').classList.contains('on'))RF['dispatch']();toast(id+' delivered \u2713','#2E7D32');alog('Delivered: '+id,'Orders');}
+// ═══ INVENTORY ═══
+RF['inv']=function(){
+  var el=document.getElementById('s-inv');
+  var low=INVENTORY.filter(function(i){return i.qty<i.min;});
+  var val=INVENTORY.reduce(function(a,i){return a+i.qty*i.cost;},0);
+  el.innerHTML='<div class="kr r4" style="margin-bottom:16px">'
+    +'<div class="kpi T"><div class="kl">Total SKUs</div><div class="kv" style="color:var(--teal)">'+INVENTORY.length+'</div></div>'
+    +'<div class="kpi R"><div class="kl">Low Stock</div><div class="kv" style="color:var(--red)">'+low.length+'</div></div>'
+    +'<div class="kpi G"><div class="kl">Stock Value</div><div class="kv" style="color:var(--grn);font-size:18px">'+f(val)+'</div></div>'
+    +'<div class="kpi A"><div class="kl">WH Capacity Used</div><div class="kv" style="color:var(--amb)">'+Math.round(INVENTORY.reduce(function(a,i){return a+i.qty;},0)/INVENTORY.reduce(function(a,i){return a+i.max;},0)*100)+'%</div></div>'
+    +'</div>'
+    +low.map(function(i){return '<div class="ab abR">\u26a0 Low stock: <strong>'+i.nm+'</strong> \u2014 '+i.qty+' (min '+i.min+')<button onclick="reorder('+i.id+')" class="btn bD bs" style="margin-left:auto">Receive</button></div>';}).join('')
+    +'<div class="sh"><div class="sh-t">Stock Levels</div><div style="display:flex;gap:8px">'
+    +'<input class="fi" style="margin:0;max-width:200px;padding:6px 10px;font-size:12px" placeholder="Search..." oninput="sI(this.value)" aria-label="Search">'
+    +'<select class="fi" style="margin:0;max-width:130px;padding:6px 10px;font-size:12px" onchange="fI(this.value)" aria-label="Cat"><option value="">All</option><option>Cement</option><option>Wire</option><option>Electrical</option><option>Tiles</option><option>Plywood</option><option>Conduit</option></select>'
+    +'<button onclick="show(\'grn\')" class="btn bT">\ud83d\udce5 Receive</button>'
+    +'<button onclick="doSync()" class="btn bX">\u21bb Tally</button>'
+    +'</div></div>'
+    +'<div class="tw"><table><thead><tr><th>Item</th><th>Cat</th><th>Location</th><th>Qty</th><th>Min</th><th>Level</th><th>Last Rcvd</th><th>Actions</th></tr></thead><tbody id="inv-tb">'+iRows(INVENTORY)+'</tbody></table></div>';
+};
+function iRows(list){return list.map(function(i){var pct=Math.min(100,Math.round(i.qty/i.max*100));var low=i.qty<i.min;var fill=low?'#EF4444':i.qty<i.min*1.5?'#F59E0B':'#10B981';return '<tr style="'+(low?'background:#FFFBFB':'')+'"><td><div style="font-weight:700'+(low?';color:var(--red)':'')+'">'+i.nm+'</div><div style="font-size:11px;color:var(--mt)">'+i.brand+'</div></td><td><span class="pill pB">'+i.cat+'</span></td><td style="font-size:12px;font-weight:700;color:var(--teal)">'+i.loc+'</td><td><div style="font-family:Manrope,sans-serif;font-weight:900;font-size:16px;color:'+(low?'var(--red)':'var(--tx)')+'">'+i.qty+'</div></td><td>'+i.min+'</td><td><div class="sl-bar" style="width:80px"><div class="sl-fill" style="width:'+pct+'%;background:'+fill+'"></div></div></td><td style="font-size:12px;color:var(--mt)">'+i.lastRcv+'</td><td><div style="display:flex;gap:3px"><button onclick="openAdj('+i.id+')" class="btn bX bs">Adjust</button>'+(low?'<button onclick="reorder('+i.id+')" class="btn bD bs">Reorder</button>':'')+'</div></td></tr>';}).join('');}
+function sI(q){var tb=document.getElementById('inv-tb');if(tb)tb.innerHTML=iRows(INVENTORY.filter(function(i){return !q||i.nm.toLowerCase().includes(q.toLowerCase());}));}
+function fI(v){var tb=document.getElementById('inv-tb');if(tb)tb.innerHTML=iRows(!v?INVENTORY:INVENTORY.filter(function(i){return i.cat===v;}));}
+function openAdj(id){var it=INVENTORY.find(function(x){return x.id===id;});if(!it)return;document.getElementById('mo-adj-b').innerHTML='<div class="ab abT" style="margin-bottom:12px"><strong>'+it.nm+'</strong><br>Current: '+it.qty+' '+it.unit+' @ '+it.loc+'</div><div class="fg"><label class="fl">New Quantity</label><input class="fi" id="adj-q" type="number" value="'+it.qty+'" aria-label="Qty"></div><div class="fg"><label class="fl">Reason</label><select class="fi" id="adj-r" aria-label="Reason"><option>Physical count correction</option><option>Damaged / Write-off</option><option>Internal use</option></select></div><div style="display:flex;gap:8px;justify-content:flex-end;margin-top:8px"><button onclick="cm(\'mo-adj\')" class="btn bX">Cancel</button><button onclick="saveAdj('+id+')" class="btn bT">Save</button></div>';om('mo-adj');}
+function saveAdj(id){var it=INVENTORY.find(function(x){return x.id===id;});if(!it)return;var nq=parseInt(document.getElementById('adj-q').value);if(isNaN(nq)||nq<0){toast('Invalid qty');return;}var old=it.qty;it.qty=nq;cm('mo-adj');RF['inv']();toast(it.nm+': '+old+' \u2192 '+nq,'#2E7D32');alog('Stock adj: '+it.nm+' '+old+'\u2192'+nq,'Inventory');}
+
+// ═══ GRN ═══
+RF['grn']=function(){
+  var el=document.getElementById('s-grn');
+  el.innerHTML='<div class="sh"><div class="sh-t">Receive Stock (GRN)</div></div>'
+    +'<div class="card" style="margin-bottom:16px"><div style="font-weight:700;margin-bottom:12px">Quick Receive</div>'
+    +'<div class="f3"><div class="fg"><label class="fl">Item</label><select class="fi" id="gi" aria-label="Item">'+INVENTORY.map(function(i){return '<option value="'+i.id+'"'+(REORDER_ID===i.id?' selected':'')+'>'+i.nm+(i.qty<i.min?' \u26a0 LOW':'')+'</option>';}).join('')+'</select></div>'
+    +'<div class="fg"><label class="fl">Quantity Received</label><input class="fi" id="gq" type="number" placeholder="e.g. 50" value="'+(REORDER_ID?((function(){var it=INVENTORY.find(function(x){return x.id===REORDER_ID;});return it?Math.max(0,it.max-it.qty):'';})()):'') +'" aria-label="Qty"></div>'
+    +'<div class="fg"><label class="fl">Supplier</label><select class="fi" id="gs" aria-label="Sup"><option>UltraTech Cement Ltd</option><option>Finolex Cables</option><option>Kajaria Ceramics</option><option>Local Purchase</option></select></div></div>'
+    +'<div class="f2"><div class="fg"><label class="fl">PO Reference</label><input class="fi" id="gp" placeholder="PO-001 or blank" aria-label="PO"></div><div class="fg"><label class="fl">Condition</label><select class="fi" id="gc" aria-label="Cond"><option>Good / Accepted</option><option>Partial \u2014 some damaged</option><option>Rejected</option></select></div></div>'
+    +'<div class="fg"><label class="fl">Notes</label><input class="fi" id="gn" placeholder="Issues, damages..." aria-label="Notes"></div>'
+    +'<button onclick="saveGRN()" class="btn bT">\u2705 Add to Stock</button></div>'
+    +'<div class="sh"><div class="sh-t">GRN History</div></div>'
+    +'<div class="tw"><table><thead><tr><th>GRN</th><th>Item</th><th>Supplier</th><th>Qty</th><th>By</th><th>Date</th><th>Status</th></tr></thead><tbody>'
+    +GRN_LOG.map(function(g){return '<tr><td style="font-weight:800;color:var(--teal)">'+g.id+'</td><td>'+g.item+'</td><td style="font-size:12px">'+g.sup+'</td><td>'+g.rcvd+'</td><td>'+g.by+'</td><td>'+g.dt+'</td><td>'+(g.ok?'<span class="pill pT">Full</span>':'<span class="pill pA">Partial</span>')+(g.note?'<div style="font-size:11px;color:var(--red)">'+g.note+'</div>':'')+'</td></tr>';}).join('')
+    +'</tbody></table></div>';
+};
+var REORDER_ID=null;
+function reorder(id){REORDER_ID=id;show('grn');}
+function saveGRN(){var id=parseInt(document.getElementById('gi').value);var qty=parseInt(document.getElementById('gq').value);if(!qty||qty<=0){toast('Enter quantity','#B71C1C');return;}var it=INVENTORY.find(function(x){return x.id===id;});if(!it)return;it.qty+=qty;var dtStr=new Date().toLocaleDateString('en-IN',{month:'short',day:'numeric'});it.lastRcv=dtStr;GRN_LOG.unshift({id:'GRN-0'+String(GRN_LOG.length+42),sup:document.getElementById('gs').value,item:it.nm,qty:qty,rcvd:qty,dt:dtStr,by:CW.staffNm||'Staff',ok:true});REORDER_ID=null;toast('+'+qty+' '+it.nm+' added \u2713','#2E7D32');alog('GRN: +'+qty+' '+it.nm,'Inventory');RF['grn']();}
+// ═══ DRIVERS ═══
+RF['drivers']=function(){
+  var el=document.getElementById('s-drivers');
+  el.innerHTML='<div class="kr r4" style="margin-bottom:16px">'
+    +'<div class="kpi T"><div class="kl">Checked In</div><div class="kv" style="color:var(--teal)">'+DRIVERS.length+'</div></div>'
+    +'<div class="kpi G"><div class="kl">Available</div><div class="kv" style="color:var(--grn)">'+DRIVERS.filter(function(d){return d.st==='Available';}).length+'</div></div>'
+    +'<div class="kpi A"><div class="kl">On Trip</div><div class="kv" style="color:var(--amb)">'+DRIVERS.filter(function(d){return d.st==='On Trip';}).length+'</div></div>'
+    +'<div class="kpi B"><div class="kl">Total Trips Today</div><div class="kv" style="color:var(--blu)">'+DRIVERS.reduce(function(a,d){return a+d.trips;},0)+'</div></div>'
+    +'</div>'
+    +'<div class="sh"><div class="sh-t">Driver Board</div><button onclick="chkInDrv()" class="btn bT">+ Check In</button></div>'
+    +'<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:16px">'
+    +DRIVERS.map(function(d){return '<div class="card" style="border-top:3px solid '+(d.st==='Available'?'var(--teal)':d.st==='On Trip'?'var(--amb)':'#E5E7EB')+'">'
+      +'<div style="display:flex;align-items:center;gap:9px;margin-bottom:11px">'
+      +'<div class="davatar" style="background:'+(d.st==='Available'?'var(--teal)':'var(--amb)')+'">'+d.nm.charAt(0)+'</div>'
+      +'<div style="flex:1"><div style="font-weight:800">'+d.nm+'</div><div style="font-size:11px;color:var(--mt)">'+d.ph+'</div></div>'+sp(d.st)+'</div>'
+      +'<div style="font-size:12px;margin-bottom:5px"><strong>'+d.veh+'</strong> \xb7 '+d.vnum+'</div>'
+      +'<div style="font-size:12px;margin-bottom:5px">Capacity: <strong>'+d.cap+'</strong></div>'
+      +'<div style="font-size:12px;margin-bottom:5px">Check-in: <strong>'+d.checkin+'</strong></div>'
+      +'<div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:11px">'
+      +'<span>Trips: <strong>'+d.trips+'</strong></span><span>Earned: <strong style="color:var(--teal)">'+f(d.earn)+'</strong></span></div>'
+      +(d.activeOrder?'<div class="ab abA" style="font-size:11px;margin-bottom:9px">On: <strong>'+d.activeOrder+'</strong></div>':'')
+      +'<div style="display:flex;gap:5px">'
+      +'<button onclick="oDrv('+d.id+')" class="btn bX bs" style="flex:1">Details</button>'
+      +'<button onclick="callPhone(\''+d.ph+'\')" class="btn bX bs">\ud83d\udcde</button>'
+      +(d.st==='On Trip'?'<button onclick="drvBack('+d.id+')" class="btn bT bs">Returned</button>':'')
+      +(d.st==='Offline'?'<button onclick="reactivateDrv('+d.id+')" class="btn bG bs">Reactivate</button>':'')
+      +'</div></div>';}).join('')+'</div>'
+    +'<div class="card"><div class="sh"><div class="sh-t">Trip Log</div></div>'
+    +'<div class="tw"><table><thead><tr><th>Driver</th><th>Order</th><th>Area</th><th>Amount</th><th>Status</th></tr></thead><tbody>'
+    +ORDERS.filter(function(o){return o.dispatchedTo;}).map(function(o){return '<tr><td style="font-weight:700">'+o.dispatchedTo+'</td><td style="color:var(--teal);font-weight:700">'+o.id+'</td><td>'+o.area+'</td><td>'+f(o.total)+'</td><td>'+sp(o.st)+'</td></tr>';}).join('')
+    +(ORDERS.filter(function(o){return o.dispatchedTo;}).length===0?'<tr><td colspan="5" style="text-align:center;color:var(--mt);padding:14px">No trips yet today</td></tr>':'')
+    +'</tbody></table></div></div>';
+};
+function oDrv(id){var d=DRIVERS.find(function(x){return x.id===id;});if(!d)return;document.getElementById('mo-drv-t').textContent=d.nm;document.getElementById('mo-drv-b').innerHTML='<div class="f2" style="margin-bottom:12px"><div><div class="kl">Vehicle</div><div style="font-weight:700">'+d.veh+'</div><div style="font-size:12px;font-family:monospace">'+d.vnum+'</div></div><div><div class="kl">Phone</div><div style="font-weight:700">'+d.ph+'</div></div><div><div class="kl">Capacity</div><div style="font-weight:700">'+d.cap+'</div></div><div><div class="kl">Trips Today</div><div style="font-family:Manrope,sans-serif;font-size:22px;font-weight:900;color:var(--teal)">'+d.trips+'</div></div><div><div class="kl">License</div><div style="font-size:12px;font-family:monospace">'+d.lic+'</div></div><div><div class="kl">Earned Today</div><div style="font-family:Manrope,sans-serif;font-size:22px;font-weight:900;color:var(--grn)">'+f(d.earn)+'</div></div></div>'+(d.activeOrder?'<div class="ab abA" style="margin-bottom:12px">Currently on: <strong>'+d.activeOrder+'</strong></div>':'')+'<div style="display:flex;gap:7px"><button onclick="callPhone(\''+d.ph+'\')" class="btn bX">\ud83d\udcde Call</button>'+(d.st==='On Trip'?'<button onclick="drvBack('+d.id+');cm(\'mo-driver\')" class="btn bT">Mark Returned</button>':'')+'<button onclick="endShift('+d.id+')" class="btn bD">End Shift</button></div>';om('mo-driver');}
+function chkInDrv(){
+  document.getElementById('mo-checkin-b').innerHTML=
+    '<div class="fg"><label class="fl">Driver Name</label><input class="fi" id="ci-nm" placeholder="Full name" aria-label="Name"></div>'
+    +'<div class="f2"><div class="fg"><label class="fl">Phone</label><input class="fi" id="ci-ph" placeholder="98XXXXXXXX" aria-label="Phone"></div>'
+    +'<div class="fg"><label class="fl">Vehicle</label><select class="fi" id="ci-veh" aria-label="Vehicle"><option>Tata Ace</option><option>Mahindra Pickup</option><option>Ashok Leyland Dost</option><option>Auto Rickshaw</option></select></div></div>'
+    +'<div class="f2"><div class="fg"><label class="fl">Vehicle Number</label><input class="fi" id="ci-vnum" placeholder="UP32 XX 1234" aria-label="Vnum"></div>'
+    +'<div class="fg"><label class="fl">Capacity</label><select class="fi" id="ci-cap" aria-label="Cap"><option>0.5 ton</option><option>1 ton</option><option>1.5 ton</option><option>2 ton</option></select></div></div>'
+    +'<div class="fg"><label class="fl">License Number</label><input class="fi" id="ci-lic" placeholder="UP32XXXXXXXX" aria-label="Lic"></div>'
+    +'<div style="display:flex;gap:8px;justify-content:flex-end;margin-top:12px">'
+    +'<button onclick="cm(\'mo-checkin\')" class="btn bX">Cancel</button>'
+    +'<button onclick="saveChkIn()" class="btn bT">Check In Driver</button></div>';
+  om('mo-checkin');
+}
+function saveChkIn(){
+  var nm=document.getElementById('ci-nm').value.trim();
+  var ph=document.getElementById('ci-ph').value.trim();
+  var veh=document.getElementById('ci-veh').value;
+  var vnum=document.getElementById('ci-vnum').value.trim();
+  var cap=document.getElementById('ci-cap').value;
+  var lic=document.getElementById('ci-lic').value.trim();
+  if(!nm){toast('Enter driver name','#B71C1C');return;}
+  if(!ph){toast('Enter phone number','#B71C1C');return;}
+  var newId=DRIVERS.length?Math.max.apply(null,DRIVERS.map(function(d){return d.id;}))+1:1;
+  DRIVERS.push({id:newId,nm:nm,ph:ph,veh:veh,vnum:vnum||'N/A',cap:cap,st:'Available',trips:0,earn:0,checkin:new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit',hour12:true}),lic:lic||'N/A',activeOrder:''});
+  cm('mo-checkin');RF['drivers']();toast(nm+' checked in \u2713','#2E7D32');alog(nm+' checked in','Drivers');
+}
+function drvBack(id){var d=DRIVERS.find(function(x){return x.id===id;});if(d){d.st='Available';d.activeOrder='';if(document.getElementById('s-drivers').classList.contains('on'))RF['drivers']();toast(d.nm+' back at WH \u2713','#2E7D32');}}
+function endShift(id){var d=DRIVERS.find(function(x){return x.id===id;});if(d){if(d.activeOrder){toast('Cannot end shift \u2014 driver has active order '+d.activeOrder,'#B71C1C');return;}d.st='Offline';cm('mo-driver');if(document.getElementById('s-drivers').classList.contains('on'))RF['drivers']();if(document.getElementById('s-dispatch').classList.contains('on'))RF['dispatch']();toast(d.nm+' shift ended');alog(d.nm+' shift ended','Drivers');}}
+function reactivateDrv(id){var d=DRIVERS.find(function(x){return x.id===id;});if(d){d.st='Available';if(document.getElementById('s-drivers').classList.contains('on'))RF['drivers']();toast(d.nm+' back on duty \u2713','#2E7D32');alog(d.nm+' reactivated','Drivers');}}
+
+// ═══ STAFF ═══
+RF['staff']=function(){
+  var el=document.getElementById('s-staff');
+  el.innerHTML='<div class="kr r4" style="margin-bottom:16px">'
+    +'<div class="kpi T"><div class="kl">Present</div><div class="kv" style="color:var(--teal)">'+STAFF.filter(function(s){return s.st==='In';}).length+'/'+STAFF.length+'</div></div>'
+    +'<div class="kpi R"><div class="kl">Absent</div><div class="kv" style="color:var(--red)">'+STAFF.filter(function(s){return s.st==='Absent';}).length+'</div></div>'
+    +'<div class="kpi G"><div class="kl">Tasks Done</div><div class="kv" style="color:var(--grn)">'+STAFF.reduce(function(a,s){return a+s.tasks;},0)+'</div></div>'
+    +'<div class="kpi A"><div class="kl">Avg Performance</div><div class="kv" style="color:var(--amb)">'+(STAFF.filter(function(s){return s.st==='In';}).reduce(function(a,s){return a+s.perf;},0)/Math.max(STAFF.filter(function(s){return s.st==='In';}).length,1)).toFixed(0)+'%</div></div>'
+    +'</div>'
+    +'<div class="sh"><div class="sh-t">Staff Roster</div></div>'
+    +'<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:14px">'
+    +STAFF.map(function(s){return '<div class="card" style="border-top:3px solid '+(s.st==='In'?'var(--teal)':'var(--red)')+'">'
+      +'<div style="display:flex;align-items:center;gap:9px;margin-bottom:11px"><div style="width:38px;height:38px;border-radius:50%;background:'+(s.st==='In'?'var(--teal)':'#E5E7EB')+';color:'+(s.st==='In'?'#fff':'var(--mt)')+';display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:900">'+s.nm.charAt(0)+'</div><div style="flex:1"><div style="font-weight:800">'+s.nm+'</div><div style="font-size:11px;color:var(--mt)">'+s.role+' \xb7 '+s.shift+'</div></div>'+sp(s.st)+'</div>'
+      +'<div class="f2" style="margin-bottom:9px;gap:8px"><div style="font-size:12px"><div class="kl">Check-in</div><strong>'+(s.checkin||'Not in')+'</strong></div><div style="font-size:12px"><div class="kl">Tasks</div><strong>'+s.tasks+'</strong></div></div>'
+      +'<div style="font-size:12px;margin-bottom:7px">Performance: <strong style="color:'+(s.perf>85?'var(--grn)':s.perf>70?'var(--amb)':'var(--red)')+'">'+s.perf+'%</strong></div>'
+      +'<div class="pgb" style="margin-bottom:10px"><div class="pgf" style="width:'+s.perf+'%;background:'+(s.perf>85?'var(--grn)':s.perf>70?'var(--amb)':'var(--red)')+'"></div></div>'
+      +'<div style="display:flex;gap:5px">'+(s.st==='In'?'<button onclick="chkOut(\''+s.nm+'\')" class="btn bD bs" style="flex:1">Check Out</button>':'<button onclick="chkIn(\''+s.nm+'\')" class="btn bT bs" style="flex:1">Check In</button>')+'<button onclick="callPhone(\''+s.ph+'\')" class="btn bX bs">\ud83d\udcde</button></div></div>';}).join('')+'</div>';
+};
+function chkIn(nm){var s=STAFF.find(function(x){return x.nm===nm;});if(s){s.st='In';s.checkin=new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});s.checkout='';RF['staff']();if(document.getElementById('s-attend').classList.contains('on'))RF['attend']();toast(nm+' checked in \u2713','#2E7D32');alog(nm+' checked in','Staff');}}
+function chkOut(nm){var s=STAFF.find(function(x){return x.nm===nm;});if(s){s.st='Out';s.checkout=new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});RF['staff']();if(document.getElementById('s-attend').classList.contains('on'))RF['attend']();toast(nm+' checked out at '+s.checkout);alog(nm+' checked out','Staff');}}
+// ═══ ATTENDANCE ═══
+RF['attend']=function(){
+  var el=document.getElementById('s-attend');
+  el.innerHTML='<div class="kr r3" style="margin-bottom:16px">'
+    +'<div class="kpi T"><div class="kl">Present Today</div><div class="kv" style="color:var(--teal)">'+STAFF.filter(function(s){return s.st==='In';}).length+'/'+STAFF.length+'</div></div>'
+    +'<div class="kpi R"><div class="kl">Absent</div><div class="kv" style="color:var(--red)">'+STAFF.filter(function(s){return s.st==='Absent';}).length+'</div></div>'
+    +'<div class="kpi G"><div class="kl">Month Avg</div><div class="kv" style="color:var(--grn)">'+(ATTEND_LOG.length>0?(ATTEND_LOG.reduce(function(a,r){return a+r.present;},0)/ATTEND_LOG.length).toFixed(1):'0')+'</div><div class="ks">staff per day</div></div>'
+    +'</div>'
+    +'<div class="card" style="margin-bottom:16px"><div class="sh"><div class="sh-t">Today \u2014 '+new Date().toLocaleDateString('en-IN',{month:'short',day:'numeric',year:'numeric'})+'</div><button onclick="exportAttendCSV()" class="btn bX bs">Export CSV</button></div>'
+    +'<div class="tw"><table><thead><tr><th>Staff</th><th>Role</th><th>Shift</th><th>Check-in</th><th>Check-out</th><th>Status</th><th>Tasks</th><th>Actions</th></tr></thead><tbody>'
+    +STAFF.map(function(s){return '<tr><td style="font-weight:700">'+s.nm+'</td><td>'+s.role+'</td><td>'+s.shift+'</td><td style="font-weight:700;color:var(--teal)">'+(s.checkin||'\u2014')+'</td><td>'+(s.checkout||'\u2014')+'</td><td>'+sp(s.st)+'</td><td>'+s.tasks+'</td><td>'+(s.st==='In'?'<button onclick="chkOut(\''+s.nm+'\')" class="btn bD bs">Out</button>':'<button onclick="chkIn(\''+s.nm+'\')" class="btn bT bs">In</button>')+'</td></tr>';}).join('')
+    +'</tbody></table></div></div>'
+    +'<div class="card"><div class="sh"><div class="sh-t">Attendance History</div></div>'
+    +'<div class="tw"><table><thead><tr><th>Date</th><th>Present</th><th>Absent</th><th>Attendance%</th></tr></thead><tbody>'
+    +ATTEND_LOG.map(function(a){var pct=Math.round(a.present/(a.present+a.absent)*100);return '<tr><td>'+a.dt+'</td><td>'+a.present+'</td><td>'+a.absent+'</td><td><span class="pill '+(pct===100?'pT':pct>75?'pA':'pI')+'">'+pct+'%</span></td></tr>';}).join('')+'</tbody></table></div></div>';
+};
+
+function exportAttendCSV(){
+  var csv='Staff,Role,Shift,Check-in,Check-out,Status,Tasks\n';
+  STAFF.forEach(function(s){csv+=s.nm+','+s.role+','+s.shift+','+(s.checkin||'-')+','+(s.checkout||'-')+','+s.st+','+s.tasks+'\n';});
+  csv+='\nDate,Present,Absent,Attendance%\n';
+  ATTEND_LOG.forEach(function(a){var pct=Math.round(a.present/(a.present+a.absent)*100);csv+=a.dt+','+a.present+','+a.absent+','+pct+'%\n';});
+  var blob=new Blob([csv],{type:'text/csv'});var url=URL.createObjectURL(blob);
+  var a=document.createElement('a');a.href=url;a.download='attendance_'+new Date().toISOString().slice(0,10)+'.csv';a.click();URL.revokeObjectURL(url);
+  toast('Attendance CSV downloaded \u2713','#2E7D32');alog('Exported attendance','Attendance');
+}
+function dlSettlePDF(){
+  var w=WH_DATA[CW.whId||'WH-001'];
+  var gr=ORDERS.filter(function(o){return o.st==='Dispatched'||o.st==='Delivered';}).reduce(function(a,o){return a+o.total;},0);
+  var comm=Math.round(gr*w.comm/100);var myPay=gr-comm;
+  var fulfilled=ORDERS.filter(function(o){return o.st==='Dispatched'||o.st==='Delivered';}).length;
+  var html='<html><head><title>Settlement - '+CW.whId+'</title><style>body{font-family:Arial,sans-serif;padding:40px;color:#1A1A1A}h1{color:#00796B;font-size:22px}table{width:100%;border-collapse:collapse;margin:20px 0}td,th{padding:10px 14px;border:1px solid #ccc;text-align:left;font-size:14px}th{background:#f5f5f5}h2{font-size:16px;margin-top:30px}.total{font-size:18px;font-weight:bold;color:#00796B}</style></head><body>'
+    +'<h1>Housizy Warehouse \u2014 Settlement Statement</h1>'
+    +'<p><strong>Warehouse:</strong> '+CW.whId+' \u2014 '+w.nm+'<br><strong>Owner:</strong> '+w.own+'<br><strong>Date:</strong> '+new Date().toLocaleDateString('en-IN',{day:'numeric',month:'long',year:'numeric'})+'</p>'
+    +'<h2>Summary</h2><table><tr><td>Orders Fulfilled</td><td><strong>'+fulfilled+'</strong></td></tr>'
+    +'<tr><td>Gross Order Value</td><td><strong>\u20b9'+gr.toLocaleString('en-IN')+'</strong></td></tr>'
+    +'<tr><td style="color:red">Housizy Commission ('+w.comm+'%)</td><td style="color:red"><strong>-\u20b9'+comm.toLocaleString('en-IN')+'</strong></td></tr>'
+    +'<tr><td class="total">Net Payable to '+w.own+'</td><td class="total">\u20b9'+myPay.toLocaleString('en-IN')+'</td></tr></table>'
+    +'<h2>Order Breakdown</h2><table><tr><th>Order</th><th>Customer</th><th>Area</th><th>Amount</th><th>Pay</th><th>Status</th></tr>'
+    +ORDERS.filter(function(o){return o.st==='Dispatched'||o.st==='Delivered';}).map(function(o){return '<tr><td>'+o.id+'</td><td>'+o.cust+'</td><td>'+o.area+'</td><td>\u20b9'+o.total.toLocaleString('en-IN')+'</td><td>'+o.pay+'</td><td>'+o.st+'</td></tr>';}).join('')
+    +'</table><p style="margin-top:40px;font-size:12px;color:#999">Generated by Housizy Warehouse System</p></body></html>';
+  var win=window.open('','_blank');win.document.write(html);win.document.close();win.print();
+  toast('Settlement PDF ready \u2713','#2E7D32');alog('Settlement PDF generated','Settlement');
+}
+// ═══ RETURNS ═══
+RF['returns']=function(){
+  var el=document.getElementById('s-returns');
+  el.innerHTML='<div class="sh"><div class="sh-t">Returns & Damaged Goods</div><button onclick="logRet()" class="btn bT">+ Log Return</button></div>'
+    +'<div class="kr r3" style="margin-bottom:16px">'
+    +'<div class="kpi R"><div class="kl">Returns This Month</div><div class="kv" style="color:var(--red)">'+RETURNS_LOG.length+'</div></div>'
+    +'<div class="kpi A"><div class="kl">Restocked</div><div class="kv" style="color:var(--amb)">'+RETURNS_LOG.filter(function(r){return r.st==='Restocked';}).length+'</div></div>'
+    +'<div class="kpi G"><div class="kl">Return Rate</div><div class="kv" style="color:var(--grn)">'+(ORDERS.length>0?(RETURNS_LOG.length/ORDERS.length*100).toFixed(1):'0')+'%</div></div>'
+    +'</div>'
+    +'<div class="card"><div class="tw"><table><thead><tr><th>Return ID</th><th>Order</th><th>Item</th><th>Qty</th><th>Reason</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead><tbody>'
+    +RETURNS_LOG.map(function(r){return '<tr><td style="font-weight:700;color:var(--teal)">'+r.id+'</td><td style="color:var(--red)">'+r.order+'</td><td>'+r.item+'</td><td>'+r.qty+'</td><td>'+r.reason+'</td><td>'+r.dt+'</td><td><span class="pill pT">'+r.st+'</span></td><td><div style="display:flex;gap:4px"><button onclick="restock(\''+r.id+'\')" class="btn bT bs">Restock</button><button onclick="dispose(\''+r.id+'\')" class="btn bD bs">Dispose</button></div></td></tr>';}).join('')
+    +(RETURNS_LOG.length===0?'<tr><td colspan="8" style="text-align:center;color:var(--mt);padding:16px">No returns logged</td></tr>':'')
+    +'</tbody></table></div></div>';
+};
+function logRet(){
+  document.getElementById('mo-retlog-b').innerHTML=
+    '<div class="fg"><label class="fl">Order ID</label><select class="fi" id="rl-ord" aria-label="Order">'
+    +ORDERS.map(function(o){return '<option value="'+o.id+'">'+o.id+' \u2014 '+o.cust+'</option>';}).join('')
+    +'</select></div>'
+    +'<div class="fg"><label class="fl">Item</label><select class="fi" id="rl-item" aria-label="Item">'
+    +INVENTORY.map(function(i){return '<option value="'+i.nm+'">'+i.nm+' ('+i.unit+')</option>';}).join('')
+    +'</select></div>'
+    +'<div class="f2"><div class="fg"><label class="fl">Quantity</label><input class="fi" id="rl-qty" type="number" min="1" placeholder="e.g. 2" aria-label="Qty"></div>'
+    +'<div class="fg"><label class="fl">Reason</label><select class="fi" id="rl-rsn" aria-label="Reason"><option>Damaged in transit</option><option>Wrong item delivered</option><option>Customer changed mind</option><option>Quality issue</option><option>Excess quantity</option></select></div></div>'
+    +'<div class="fg"><label class="fl">Notes</label><input class="fi" id="rl-notes" placeholder="Additional details..." aria-label="Notes"></div>'
+    +'<div style="display:flex;gap:8px;justify-content:flex-end;margin-top:12px">'
+    +'<button onclick="cm(\'mo-retlog\')" class="btn bX">Cancel</button>'
+    +'<button onclick="saveRet()" class="btn bT">Log Return</button></div>';
+  om('mo-retlog');
+}
+function saveRet(){
+  var ord=document.getElementById('rl-ord').value;
+  var item=document.getElementById('rl-item').value;
+  var qty=parseInt(document.getElementById('rl-qty').value);
+  var rsn=document.getElementById('rl-rsn').value;
+  var notes=document.getElementById('rl-notes').value.trim();
+  if(!qty||qty<=0){toast('Enter valid quantity','#B71C1C');return;}
+  var today=new Date();var dtStr=today.toLocaleDateString('en-IN',{month:'short',day:'numeric'});
+  RETURNS_LOG.unshift({id:'RET-0'+String(RETURNS_LOG.length+42),order:ord,item:item,qty:qty,reason:rsn+(notes?' \u2014 '+notes:''),dt:dtStr,st:'Received'});
+  cm('mo-retlog');RF['returns']();toast('Return logged \u2713','#2E7D32');alog('Return: '+ord+' \u2014 '+item,'Returns');
+}
+function restock(id){
+  var r=RETURNS_LOG.find(function(x){return x.id===id;});if(!r)return;
+  var it=INVENTORY.find(function(x){return x.nm===r.item;});
+  if(it){
+    it.qty+=r.qty;r.st='Restocked';
+    RF['returns']();toast(r.item+' \xd7'+r.qty+' restocked to inventory \u2713','#2E7D32');
+    alog('Restocked: '+r.item+' \xd7'+r.qty+' from '+r.id,'Returns');
+  } else {
+    toast('Item "'+r.item+'" not found in inventory. Check item name.','#B71C1C');
+  }
+}
+function dispose(id){
+  var r=RETURNS_LOG.find(function(x){return x.id===id;});if(!r)return;
+  r.st='Disposed';
+  var it=INVENTORY.find(function(x){return x.nm===r.item;});
+  if(it){it.qty=Math.max(0,it.qty-r.qty);}
+  RF['returns']();toast(r.item+' \xd7'+r.qty+' disposed & written off \u2713','#B71C1C');
+  alog('Disposed: '+r.item+' \xd7'+r.qty+' from '+r.id,'Returns');
+}
+
+// ═══ TALLY ═══
+RF['tally']=function(){
+  var el=document.getElementById('s-tally');
+  el.innerHTML='<div class="g2" style="margin-bottom:16px">'
+    +'<div class="card card-teal"><div class="sh"><div class="sh-t">Tally Connection Status</div></div>'
+    +'<div class="srow"><div class="sic" style="background:#E0F2F1">\ud83d\udcca</div><div style="flex:1"><div style="font-weight:700">Tally Prime</div><div style="font-size:12px;color:var(--mt)">'+TALLY_CFG.ip+':'+TALLY_CFG.port+'</div></div><span class="pill pT">Connected</span></div>'
+    +'<div class="kr r2" style="margin-top:13px">'
+    +'<div style="background:#F0F4F3;border-radius:8px;padding:10px;border:1px solid #B2DFDB"><div class="kl">Last Sync</div><div style="font-weight:700">'+(TALLY_CFG.lastSync?Math.round((Date.now()-TALLY_CFG.lastSync.getTime())/60000)+' min ago':'Not yet')+'</div></div>'
+    +'<div style="background:#F0F4F3;border-radius:8px;padding:10px;border:1px solid #B2DFDB"><div class="kl">Items Synced</div><div style="font-weight:700">'+INVENTORY.length+' SKUs</div></div>'
+    +'<div style="background:#F0F4F3;border-radius:8px;padding:10px;border:1px solid #B2DFDB"><div class="kl">Auto Sync</div><div style="font-weight:700">'+TALLY_CFG.freq+'</div></div>'
+    +'<div style="background:#F0F4F3;border-radius:8px;padding:10px;border:1px solid #B2DFDB"><div class="kl">Vouchers</div><div style="font-weight:700">'+ORDERS.filter(function(o){return o.st==='Delivered';}).length+' today</div></div>'
+    +'</div>'
+    +'<button onclick="doSync()" class="btn bT bf" style="margin-top:12px">\u27f3 Sync Now</button>'
+    +'</div>'
+    +'<div class="card"><div class="sh"><div class="sh-t">Configuration</div></div>'
+    +'<div class="fg"><label class="fl">Server IP</label><input class="fi" value="'+TALLY_CFG.ip+'" aria-label="IP"></div>'
+    +'<div class="fg"><label class="fl">Port</label><input class="fi" value="'+TALLY_CFG.port+'" aria-label="Port"></div>'
+    +'<div class="fg"><label class="fl">Sync Frequency</label><select class="fi" aria-label="Freq"><option'+(TALLY_CFG.freq==='Every 5 min'?' selected':'')+'>Every 5 min</option><option'+(TALLY_CFG.freq==='Every 10 min'?' selected':'')+'>Every 10 min</option><option'+(TALLY_CFG.freq==='Manual only'?' selected':'')+'>Manual only</option></select></div>'
+    +'<div class="fg" style="display:flex;align-items:center;gap:10px"><label class="fl" style="margin:0">Auto-create sales voucher on delivery</label>'
+    +'<button class="tgl on" onclick="this.classList.toggle(\'on\');var s=this.querySelector(\'span\');if(s)s.style.left=this.classList.contains(\'on\')?\'21px\':\'3px\';this.style.background=this.classList.contains(\'on\')?\'var(--grn)\':\'#D1D5DB\'"><span style="position:absolute;top:3px;left:21px;width:14px;height:14px;border-radius:50%;background:#fff"></span></button></div>'
+    +'<button onclick="saveTallyCfg()" class="btn bT bf">Save & Test</button>'
+    +'</div></div>'
+    +'<div class="card"><div class="sh"><div class="sh-t">Item Mapping (Tally \u2194 Housizy)</div></div>'
+    +'<div class="tw"><table><thead><tr><th>Housizy Item</th><th>Tally Name (exact)</th><th>HSN</th><th>Current Stock</th></tr></thead><tbody>'
+    +INVENTORY.map(function(i,idx){return '<tr><td style="font-weight:700">'+i.nm+'</td><td><input class="fi tally-map" data-idx="'+idx+'" style="margin:0;padding:5px 9px;font-size:12px" value="'+i.tally+'" aria-label="Tally"></td><td style="font-family:monospace">'+i.hsn+'</td><td>'+i.qty+' '+i.unit+'</td></tr>';}).join('')
+    +'</tbody></table></div><button onclick="saveTallyMap()" class="btn bT" style="margin-top:10px">Save Mapping</button></div>'
+    +'<div class="card" style="margin-top:16px"><div class="sh"><div class="sh-t">Sync Log</div></div>'
+    +'<div style="font-family:monospace;font-size:12px;background:#F0F4F3;border-radius:8px;padding:12px;max-height:140px;overflow-y:auto;line-height:2;color:#004D40">'
+    +'<div>['+new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'})+'] Sync OK \u2014 10 items, 1 voucher</div>'
+    +'<div>[09:30 AM] Sync OK \u2014 no changes</div>'
+    +'<div>[09:25 AM] Price updated: OPC Cement</div>'
+    +'</div></div>';
+};
+function doSync(){
+  toast('\u27f3 Tally sync...','#00695C');alog('Manual sync triggered','Tally');
+  setTimeout(function(){
+    TALLY_CFG.lastSync=new Date();
+    toast('Tally sync complete \u2014 '+INVENTORY.length+' items synced \u2713','#2E7D32');
+    var el=document.getElementById('ts-tb');if(el)el.textContent='Tally: Synced '+new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
+    // Refresh whichever section is visible
+    ['dash','tally','inv','queue','pack','dispatch','drivers','staff','attend','returns','settle','perf'].forEach(function(sec){
+      var s=document.getElementById('s-'+sec);if(s&&s.classList.contains('on')&&RF[sec])RF[sec]();
+    });
+  },1800);
+}
+function saveTallyCfg(){
+  var el=document.getElementById('s-tally');
+  var inputs=el.querySelectorAll('.fi');
+  // inputs in config card: IP, Port, Freq select
+  TALLY_CFG.ip=inputs[0]?inputs[0].value.trim()||'localhost':'localhost';
+  TALLY_CFG.port=inputs[1]?inputs[1].value.trim()||'9000':'9000';
+  TALLY_CFG.freq=inputs[2]?inputs[2].value:'Every 5 min';
+  toast('Tally config saved \u2713 \u2014 testing connection to '+TALLY_CFG.ip+':'+TALLY_CFG.port+'...','#00695C');
+  alog('Tally config updated: '+TALLY_CFG.ip+':'+TALLY_CFG.port,'Tally');
+  setTimeout(function(){toast('Connection OK \u2713','#2E7D32');},1200);
+}
+function saveTallyMap(){
+  var inputs=document.querySelectorAll('.tally-map');
+  inputs.forEach(function(inp){
+    var idx=parseInt(inp.getAttribute('data-idx'));
+    if(INVENTORY[idx])INVENTORY[idx].tally=inp.value.trim();
+  });
+  toast('Tally mapping saved for '+inputs.length+' items \u2713','#2E7D32');
+  alog('Tally mapping updated','Tally');
+}
+// ═══ SETTLEMENT ═══
+RF['settle']=function(){
+  var el=document.getElementById('s-settle');
+  var w=WH_DATA[CW.whId||'WH-001'];
+  var gr=ORDERS.filter(function(o){return o.st==='Dispatched'||o.st==='Delivered';}).reduce(function(a,o){return a+o.total;},0);
+  var comm=Math.round(gr*w.comm/100);var myPay=gr-comm;var outs=Math.max(0,myPay-270000+38000);
+  el.innerHTML='<div class="ab abT" style="margin-bottom:16px">As a <strong>separate warehouse entity</strong>, Housizy deducts '+w.comm+'% commission on each order you fulfill. Your net payment is settled weekly via NEFT.</div>'
+    +'<div class="kr r4" style="margin-bottom:18px">'
+    +'<div class="kpi T"><div class="kl">Gross Order Value Today</div><div class="kv" style="color:var(--teal)">'+f(gr)+'</div></div>'
+    +'<div class="kpi R"><div class="kl">Housizy Commission ('+w.comm+'%)</div><div class="kv" style="color:var(--red)">'+f(comm)+'</div></div>'
+    +'<div class="kpi G"><div class="kl">Your Net Earnings</div><div class="kv" style="color:var(--grn)">'+f(myPay)+'</div></div>'
+    +'<div class="kpi A"><div class="kl">Outstanding from Housizy</div><div class="kv" style="color:var(--amb)">'+f(outs)+'</div></div>'
+    +'</div>'
+    +'<div class="card" style="margin-bottom:16px"><div class="sh"><div class="sh-t">Settlement Statement \u2014 Current Cycle</div><button onclick="dlSettlePDF()" class="btn bX bs">PDF</button></div>'
+    +'<div style="background:#F0F4F3;border-radius:10px;padding:16px">'
+    +'<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #B2DFDB;font-size:14px"><span>Total Orders Fulfilled</span><strong>'+ORDERS.filter(function(o){return o.st==="Dispatched"||o.st==="Delivered";}).length+'</strong></div>'
+    +'<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #B2DFDB;font-size:14px"><span>Gross Order Value</span><strong>'+f(gr)+'</strong></div>'
+    +'<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #B2DFDB;font-size:14px;color:var(--red)"><span>Less: Housizy Commission ('+w.comm+'%)</span><strong>-'+f(comm)+'</strong></div>'
+    +'<div style="display:flex;justify-content:space-between;padding:10px 0;font-size:16px;font-weight:900;color:var(--teal)"><span>Net Payable to '+w.own+'</span><strong>'+f(myPay)+'</strong></div>'
+    +'</div></div>'
+    +'<div class="card"><div class="sh"><div class="sh-t">Payment History</div></div>'
+    +'<div class="tw"><table><thead><tr><th>Date</th><th>Period</th><th>Orders</th><th>Gross</th><th>Commission</th><th>You Received</th><th>Mode</th><th>Status</th></tr></thead><tbody>'
+    +'<tr><td>Apr 1</td><td>Mar 25-31</td><td>41</td><td>'+f(164000)+'</td><td>'+f(13120)+'</td><td style="font-weight:800;color:var(--teal)">'+f(150880)+'</td><td>NEFT</td><td><span class="pill pT">Received</span></td></tr>'
+    +'<tr><td>Mar 25</td><td>Mar 18-24</td><td>38</td><td>'+f(152000)+'</td><td>'+f(12160)+'</td><td style="font-weight:800;color:var(--teal)">'+f(139840)+'</td><td>NEFT</td><td><span class="pill pT">Received</span></td></tr>'
+    +'<tr><td>Mar 18</td><td>Mar 11-17</td><td>32</td><td>'+f(128000)+'</td><td>'+f(10240)+'</td><td style="font-weight:800;color:var(--teal)">'+f(117760)+'</td><td>NEFT</td><td><span class="pill pT">Received</span></td></tr>'
+    +'</tbody></table></div></div>';
+};
+
+// ═══ PERFORMANCE ═══
+RF['perf']=function(){
+  var el=document.getElementById('s-perf');
+  var totalOrders=ORDERS.length;
+  var fulfilled=ORDERS.filter(function(o){return o.st==='Dispatched'||o.st==='Delivered';}).length;
+  var onTime=ORDERS.filter(function(o){return o.age<=30&&(o.st==='Dispatched'||o.st==='Delivered'||o.st==='Ready');}).length;
+  var onTimePct=totalOrders>0?Math.round(onTime/totalOrders*100):0;
+  var packed=ORDERS.filter(function(o){return o.packed;}).length;
+  var packAcc=totalOrders>0?(packed/totalOrders*100).toFixed(1):0;
+  var rev=ORDERS.filter(function(o){return o.st==='Dispatched'||o.st==='Delivered';}).reduce(function(a,o){return a+o.total;},0);
+  var totalTrips=DRIVERS.reduce(function(a,d){return a+d.trips;},0);
+  el.innerHTML='<div class="kr r4" style="margin-bottom:16px">'
+    +'<div class="kpi T"><div class="kl">Total Orders</div><div class="kv" style="color:var(--teal)">'+totalOrders+'</div><div class="ks">'+fulfilled+' fulfilled</div></div>'
+    +'<div class="kpi G"><div class="kl">On-time Dispatch</div><div class="kv" style="color:var(--grn)">'+onTimePct+'%</div><div class="ks">within 30 min SLA</div></div>'
+    +'<div class="kpi A"><div class="kl">Packing Accuracy</div><div class="kv" style="color:var(--amb)">'+packAcc+'%</div></div>'
+    +'<div class="kpi B"><div class="kl">Revenue Processed</div><div class="kv" style="color:var(--blu);font-size:18px">'+f(rev)+'</div></div>'
+    +'</div>'
+    +'<div class="g2" style="margin-bottom:16px">'
+    +'<div class="card"><div class="sh"><div class="sh-t">Orders by Day</div></div><div class="ch"><canvas id="c-ord"></canvas></div></div>'
+    +'<div class="card"><div class="sh"><div class="sh-t">Category Split</div></div><div class="ch"><canvas id="c-cat"></canvas></div></div>'
+    +'</div>'
+    +'<div class="g2">'
+    +'<div class="card"><div class="sh"><div class="sh-t">Driver Performance</div></div>'
+    +'<div class="tw"><table><thead><tr><th>Driver</th><th>Trips</th><th>On-time</th><th>Earned</th></tr></thead><tbody>'
+    +DRIVERS.map(function(d){var otPct=d.trips>0?Math.min(100,Math.round(90+Math.random()*10)):0;return '<tr><td style="font-weight:700">'+d.nm+'</td><td>'+d.trips+'</td><td><span class="pill '+(otPct>=90?'pT':otPct>=75?'pA':'pI')+'">'+otPct+'%</span></td><td style="color:var(--teal);font-weight:700">'+f(d.earn)+'</td></tr>';}).join('')
+    +'</tbody></table></div></div>'
+    +'<div class="card"><div class="sh"><div class="sh-t">Staff Productivity</div></div>'
+    +'<div class="tw"><table><thead><tr><th>Staff</th><th>Role</th><th>Tasks</th><th>Score</th></tr></thead><tbody>'
+    +STAFF.map(function(s){return '<tr><td style="font-weight:700">'+s.nm+'</td><td>'+s.role+'</td><td>'+s.tasks+'</td><td><span style="font-weight:700;color:'+(s.perf>85?'var(--grn)':s.perf>70?'var(--amb)':'var(--red)')+'">'+s.perf+'%</span></td></tr>';}).join('')
+    +'</tbody></table></div></div></div>';
+  setTimeout(function(){
+    mch('c-ord','bar',{labels:['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],datasets:[{data:[18,22,19,25,21,28,16],backgroundColor:['#B2DFDB','#B2DFDB','#B2DFDB','#B2DFDB','#B2DFDB','#00695C','#B2DFDB'],borderRadius:5,borderSkipped:false}]},{scales:{y:{grid:{color:'#F5F5F5'}},x:{grid:{display:false}}}});
+    mch('c-cat','doughnut',{labels:['Cement','Wire','Electrical','Tiles','Plywood'],datasets:[{data:[40,20,22,10,8],backgroundColor:['#80CBC4','#4DD0E1','#81D4FA','#B2DFDB','#B2EBF2'],borderWidth:1}]},{plugins:{legend:{display:true,position:'right',labels:{font:{size:11}}}}});
+  },80);
+};
+
+// ═══ SETTINGS ═══
+RF['settings']=function(){
+  var w=WH_DATA[CW.whId||'WH-001'];
+  var el=document.getElementById('s-settings');
+  el.innerHTML='<div class="g2">'
+    +'<div class="card"><div class="sh"><div class="sh-t">Warehouse Profile</div></div>'
+    +'<div class="fg"><label class="fl">Location Name</label><input class="fi" value="'+w.nm+'" aria-label="Name"></div>'
+    +'<div class="fg"><label class="fl">Owner / Company Name</label><input class="fi" value="'+w.own+'" aria-label="Owner"></div>'
+    +'<div class="fg"><label class="fl">Owner Phone</label><input class="fi" value="'+w.ownPh+'" aria-label="Phone"></div>'
+    +'<div class="fg"><label class="fl">Full Address</label><textarea class="fi" rows="2" aria-label="Address">'+w.addr+'</textarea></div>'
+    +'<div class="f2"><div class="fg"><label class="fl">Opens At</label><input class="fi" type="time" value="'+w.openTime+'" aria-label="Open"></div><div class="fg"><label class="fl">Closes At</label><input class="fi" type="time" value="'+w.closeTime+'" aria-label="Close"></div></div>'
+    +'<button onclick="svSet()" class="btn bT bf">Save Profile</button></div>'
+    +'<div>'
+    +'<div class="card" style="margin-bottom:14px"><div class="sh"><div class="sh-t">Commission & Settlement</div></div>'
+    +'<div style="background:#F0F4F3;border-radius:9px;padding:14px">'
+    +'<div style="display:flex;justify-content:space-between;font-size:14px;margin-bottom:8px"><span>Housizy Commission Rate</span><strong style="color:var(--red)">'+w.comm+'% per order</strong></div>'
+    +'<div style="display:flex;justify-content:space-between;font-size:14px;margin-bottom:8px"><span>Settlement Cycle</span><strong>Weekly</strong></div>'
+    +'<div style="display:flex;justify-content:space-between;font-size:14px"><span>Payment Mode</span><strong>NEFT / IMPS</strong></div>'
+    +'</div>'
+    +'<div class="ab abT" style="margin-top:12px;font-size:12px;margin-bottom:0">Contact your Housizy account manager to modify commission rate.</div></div>'
+    +'<div class="card"><div class="sh"><div class="sh-t">Warehouse Capacity</div></div>'
+    +'<div class="fg"><label class="fl">Total Area (sq ft)</label><input class="fi" value="'+w.cap+'" type="number" aria-label="Cap"></div>'
+    +'<div class="fg"><label class="fl">Number of Racks</label><input class="fi" value="6" type="number" aria-label="Racks"></div>'
+    +'<button onclick="svLayout()" class="btn bX bf">Save Layout</button>'
+    +'</div></div></div>';
+};
+function svSet(){
+  var el=document.getElementById('s-settings');
+  var inputs=el.querySelectorAll('input,textarea');
+  var w=WH_DATA[CW.whId||'WH-001'];
+  // inputs order: name, owner, phone, address, openTime, closeTime, cap, racks
+  if(inputs[0])w.nm=inputs[0].value.trim()||w.nm;
+  if(inputs[1])w.own=inputs[1].value.trim()||w.own;
+  if(inputs[2])w.ownPh=inputs[2].value.trim()||w.ownPh;
+  if(inputs[3])w.addr=inputs[3].value.trim()||w.addr;
+  if(inputs[4])w.openTime=inputs[4].value||w.openTime;
+  if(inputs[5])w.closeTime=inputs[5].value||w.closeTime;
+  CW.whNm=w.nm;CW.own=w.own;CW.staffNm=w.own;
+  document.getElementById('sb-wh-name').textContent=CW.whId+' \u2014 '+w.nm;
+  document.getElementById('sb-staff-name').textContent=w.own;
+  document.getElementById('tb-wh-badge').textContent=CW.whId+' \u2014 '+w.nm;
+  toast('Settings saved \u2713','#2E7D32');alog('Settings updated','Settings');
+}
+function svLayout(){
+  var w=WH_DATA[CW.whId||'WH-001'];
+  var el=document.getElementById('s-settings');
+  var capInput=el.querySelector('input[type="number"][aria-label="Cap"]');
+  var rackInput=el.querySelector('input[type="number"][aria-label="Racks"]');
+  if(capInput)w.cap=parseInt(capInput.value)||w.cap;
+  if(rackInput)w.racks=parseInt(rackInput.value)||6;
+  toast('Layout saved \u2713','#2E7D32');alog('Layout updated','Settings');
+}
+
+// ═══ ORDER DETAIL MODAL ═══
+function oOrd(id){
+  var o=ORDERS.find(function(x){return x.id===id;});if(!o)return;
+  document.getElementById('mo-ord-t').textContent=o.id+' \u2014 '+o.cust;
+  document.getElementById('mo-ord-b').innerHTML=
+    '<div class="f2" style="margin-bottom:13px">'
+    +'<div><div class="kl">Customer</div><div style="font-weight:700">'+o.cust+'</div><div style="font-size:12px;color:var(--mt)">'+o.ph+'</div></div>'
+    +'<div><div class="kl">Area</div><div style="font-weight:700">'+o.area+'</div></div>'
+    +'<div><div class="kl">Status</div>'+sp(o.st)+'</div>'
+    +'<div><div class="kl">Total</div><div style="font-family:Manrope,sans-serif;font-size:20px;font-weight:900;color:var(--teal)">'+f(o.total)+'</div></div>'
+    +'</div>'
+    +(o.notes?'<div class="ab abR" style="margin-bottom:12px">\u26a0 <strong>'+o.notes+'</strong></div>':'')
+    +'<div style="font-weight:700;margin-bottom:10px">Items to Pick:</div>'
+    +o.items.map(function(it){return '<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border:1.5px solid var(--br);border-radius:9px;margin-bottom:7px"><div><div style="font-weight:700">'+it.nm+'</div><div style="font-size:12px;color:var(--mt)">'+it.qty+' '+it.unit+'</div></div><div style="text-align:right"><div style="font-size:11px;color:var(--mt)">Location</div><div style="font-weight:800;font-size:14px;color:var(--teal)">'+it.loc+'</div></div></div>';}).join('')
+    +'<div style="display:flex;gap:7px;margin-top:14px;flex-wrap:wrap">'
+    +(o.st==='New'?'<button onclick="sPack(\''+o.id+'\');cm(\'mo-order\')" class="btn bT">\ud83d\udce6 Start Pack</button>':'')
+    +(o.st==='Packing'?'<button onclick="openPack(\''+o.id+'\');cm(\'mo-order\')" class="btn bB">\u2705 Checklist</button>':'')
+    +(o.st==='Ready'?'<button onclick="openDisp(\''+o.id+'\');cm(\'mo-order\')" class="btn bG">\ud83d\ude9b Dispatch</button>':'')
+    +'<button onclick="callPhone(\''+o.ph+'\')" class="btn bX">\ud83d\udcde Call Customer</button>'
+    +'<button onclick="cm(\'mo-order\')" class="btn bX" style="margin-left:auto">Close</button>'
+    +'</div>';
+  om('mo-order');
+}
+window.onload=function(){};
+</script>
+</body>
+</html>
